@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Driver;
 using Netrunner.Server.Models;
@@ -6,14 +8,15 @@ using Netrunner.Shared;
 
 namespace Netrunner.Server.Hubs
 {
+    //[Authorize]
     public class ChatHub : Hub
     {
-        private IMongoCollection<ChatMessage> _chatMessages;
+        private readonly IMongoCollection<ChatMessage> _chatMessages;
 
-        public ChatHub(IChatDatabaseSettings settings)
+        public ChatHub(IDatabaseSettings settings)
         {
             var mongoClient = new MongoClient(settings.ConnectionString);
-            var database = mongoClient.GetDatabase(settings.DatabaseName);
+            var database = mongoClient.GetDatabase(String.Empty);
             _chatMessages = database.GetCollection<ChatMessage>(settings.ChatCollectionName);
         }
 
