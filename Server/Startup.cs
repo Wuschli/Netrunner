@@ -6,13 +6,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AspNetCore.Identity.MongoDbCore.Extensions;
 using AspNetCore.Identity.MongoDbCore.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Netrunner.Server.Hubs;
+using Netrunner.Server.Identity;
 using Netrunner.Server.Identity.Data;
 using Netrunner.Server.Models;
 
@@ -81,33 +84,22 @@ namespace Netrunner.Server
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
                 .AddCookie("Identity.Application")
                 .AddJwtBearer(options =>
                 {
-                    options.Audience = jwtSettings.Audience;
-                    options.ClaimsIssuer = jwtSettings.Issuer;
-                    options.Events = new JwtBearerEvents
+                    options.RequireHttpsMetadata = true;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        OnMessageReceived = context =>
-                        {
-                            var accessToken = context.Request.Query["access_token"];
-
-                            // If the request is for our hub...
-                            var path = context.HttpContext.Request.Path;
-                            if (!string.IsNullOrEmpty(accessToken) &&
-                                (path.StartsWithSegments("/chathub")))
-                            {
-                                // Read the token out of the query string
-                                context.Token = accessToken;
-                            }
-
-                            return Task.CompletedTask;
-                        }
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+                        ValidateAudience = true,
+                        ValidAudience = jwtSettings.Audience,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.FromMinutes(1)
                     };
                 });
 
@@ -120,6 +112,8 @@ namespace Netrunner.Server
                 opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
                     new[] {"application/octet-stream"});
             });
+
+            services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -144,7 +138,6 @@ namespace Netrunner.Server
             app.UseStaticFiles();
 
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
 

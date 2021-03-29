@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Netrunner.Server", "Server\Netrunner.Server.csproj", "{5D8891AA-6D6D-4123-B4B7-B80A8C307592}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netrunner.Server", "Server\Netrunner.Server.csproj", "{5D8891AA-6D6D-4123-B4B7-B80A8C307592}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Netrunner.Client", "Client\Netrunner.Client.csproj", "{246051C1-BEAA-4BAE-B9A7-FE636F85293D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netrunner.Client", "Client\Netrunner.Client.csproj", "{246051C1-BEAA-4BAE-B9A7-FE636F85293D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Netrunner.Shared", "Shared\Netrunner.Shared.csproj", "{098316BC-C705-4EAF-A4BD-19AC311DB14A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netrunner.Shared", "Shared\Netrunner.Shared.csproj", "{098316BC-C705-4EAF-A4BD-19AC311DB14A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9686ACD9-3229-4F9F-9B7E-8140271D776E}"
 	ProjectSection(SolutionItems) = preProject

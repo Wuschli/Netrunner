@@ -11,10 +11,4 @@ namespace Netrunner.Shared.Identity
         [DataType(DataType.Password)]
         public string Password { get; set; }
     }
-
-    public class LoginResponse
-    {
-        public string UserName { get; init; }
-        public string Token { get; init; }
-    }
 }
