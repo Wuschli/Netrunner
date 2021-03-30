@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Netrunner.Shared
+namespace Netrunner.Shared.Chat
 {
     public class ChatMessage
     {

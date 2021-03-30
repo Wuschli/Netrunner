@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Driver;
 using Netrunner.Server.Models;
 using Netrunner.Shared;
+using Netrunner.Shared.Chat;
 
 namespace Netrunner.Server.Hubs
 {
