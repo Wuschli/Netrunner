@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using MongoDB.Driver;
@@ -22,39 +24,50 @@ namespace Netrunner.Server.Controllers.V1.Chat
             _rooms = database.GetCollection<ChatRoom>(settings.ChatRoomCollectionName);
         }
 
-        // GET: api/<RoomController>
         [HttpGet]
         public async Task<IEnumerable<ChatRoom>> Get()
         {
             return await _rooms.Find(FilterDefinition<ChatRoom>.Empty).ToListAsync();
         }
 
-        // GET api/<RoomController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ChatRoom>> Get(string id)
         {
             return await _rooms.Find(room => room.Id == id).FirstAsync();
         }
 
-        // POST api/<RoomController>
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] ChatRoom value)
+        public async Task<ActionResult> Create([FromBody] ChatRoom value)
         {
             await _rooms.InsertOneAsync(value);
             return Ok();
         }
 
-        // PUT api/<RoomController>/5
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] string value)
+        [HttpPost("join/{id}")]
+        public async Task<ActionResult> Join(string id)
         {
-            return Ok();
-        }
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdString, out var userId))
+                return Forbid();
 
-        // DELETE api/<RoomController>/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
-        {
+            var room = await _rooms.Find(r => r.Id == id).FirstAsync();
+            if (room == null)
+                return NotFound();
+
+            if (room.Members.Contains(userId))
+                return Ok();
+
+            if (room.Invitations == null || !room.Invitations.Contains(userId))
+                return Forbid();
+
+            var update = Builders<ChatRoom>.Update
+                .Push(r => r.Members, userId)
+                .Pull(r => r.Invitations, userId);
+
+
+            var result = await _rooms.FindOneAndUpdateAsync(r => r.Id == id, update);
+            if (result == null)
+                return NotFound();
             return Ok();
         }
     }

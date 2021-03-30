@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using Netrunner.Server.Hubs;
 using Netrunner.Server.Models;
@@ -52,15 +51,19 @@ namespace Netrunner.Server.Controllers.V1.Chat
             if (string.IsNullOrWhiteSpace(message.RoomId))
                 return BadRequest("No room given");
 
-            message.Timestamp = DateTime.Now;
 
             var room = await _rooms.Find(r => r.Id == message.RoomId).FirstOrDefaultAsync();
             if (room == null)
                 return NotFound("Room not found");
 
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdString, out var userId) || room.Members == null || !room.Members.Contains(userId))
+                return Forbid();
+
+            message.Timestamp = DateTime.Now;
             await _messages.InsertOneAsync(message);
 
-            await _chatHubContext.Clients.All.ReceiveMessage(message);
+            await _chatHubContext.Clients.Group($"room{message.RoomId}").ReceiveMessage(message);
 
             return Ok();
         }

@@ -81,11 +81,11 @@ namespace Netrunner.Server.Controllers.V1.Identity
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, string.Join(",", roles))
+                new Claim(ClaimTypes.Role, string.Join(",", roles)),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
             var jwtResult = _jwtAuthManager.GenerateTokens(user.UserName, claims, DateTime.Now);
-            //var token = AuthenticationHelper.GenerateJwtToken(user, _jwtSettings);
 
             var response = new AuthenticationResponse
             {
