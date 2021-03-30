@@ -16,7 +16,7 @@ namespace Netrunner.Server.Hubs
         public ChatHub(IDatabaseSettings settings)
         {
             var mongoClient = new MongoClient(settings.ConnectionString);
-            var database = mongoClient.GetDatabase(string.Empty);
+            var database = mongoClient.GetDatabase(settings.DatabaseName);
             _chatMessages = database.GetCollection<ChatMessage>(settings.ChatCollectionName);
         }
 
