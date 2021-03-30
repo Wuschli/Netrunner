@@ -5,6 +5,7 @@
 @using Netrunner.Shared.Chat
 @inject NavigationManager NavigationManager
 @inject IAuthService AuthService
+@inject HttpClient Http
 @implements IAsyncDisposable
 
 <div class="form-group">
@@ -35,6 +36,7 @@
     private readonly List<ChatMessage> _messages = new List<ChatMessage>();
     private string _userInput;
     private string _messageInput;
+    private string _roomId = "6063823dd743649dead706b1";
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,15 +52,20 @@
         });
 
         await _hubConnection.StartAsync();
+
+        var messages = await Http.GetFromJsonAsync<IEnumerable<ChatMessage>>($"api/v1/message/{_roomId}");
+        if (messages != null)
+            _messages.AddRange(messages.Reverse());
     }
 
     Task Send() =>
-        _hubConnection.SendAsync("SendMessage", new ChatMessage
+        Http.PostAsJsonAsync("api/v1/message", new ChatMessage
         {
-            Timestamp = DateTime.Now,
             Sender = _userInput,
-            Message = _messageInput
+            Message = _messageInput,
+            RoomId = _roomId
         });
+
 
     public bool IsConnected =>
         _hubConnection.State == HubConnectionState.Connected;

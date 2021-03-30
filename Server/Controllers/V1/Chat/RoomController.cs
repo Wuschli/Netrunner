@@ -19,16 +19,14 @@ namespace Netrunner.Server.Controllers.V1.Chat
         {
             var mongoClient = new MongoClient(settings.ConnectionString);
             var database = mongoClient.GetDatabase(settings.DatabaseName);
-            _rooms = database.GetCollection<ChatRoom>(settings.ChatCollectionName);
+            _rooms = database.GetCollection<ChatRoom>(settings.ChatRoomCollectionName);
         }
 
         // GET: api/<RoomController>
         [HttpGet]
         public async Task<IEnumerable<ChatRoom>> Get()
         {
-            var projection = Builders<ChatRoom>.Projection
-                .Exclude(room => room.Messages);
-            return await _rooms.Find(FilterDefinition<ChatRoom>.Empty).Project<ChatRoom>(projection).ToListAsync();
+            return await _rooms.Find(FilterDefinition<ChatRoom>.Empty).ToListAsync();
         }
 
         // GET api/<RoomController>/5

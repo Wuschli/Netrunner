@@ -9,7 +9,7 @@ using Netrunner.Shared.Chat;
 namespace Netrunner.Server.Hubs
 {
     [Authorize]
-    public class ChatHub : Hub
+    public class ChatHub : Hub<IChatHub>
     {
         private readonly IMongoCollection<ChatMessage> _chatMessages;
 
@@ -17,13 +17,13 @@ namespace Netrunner.Server.Hubs
         {
             var mongoClient = new MongoClient(settings.ConnectionString);
             var database = mongoClient.GetDatabase(settings.DatabaseName);
-            _chatMessages = database.GetCollection<ChatMessage>(settings.ChatCollectionName);
+            _chatMessages = database.GetCollection<ChatMessage>(settings.ChatRoomCollectionName);
         }
 
         public async Task SendMessage(ChatMessage message)
         {
             await _chatMessages.InsertOneAsync(message);
-            await Clients.All.SendAsync("ReceiveMessage", message);
+            await Clients.All.ReceiveMessage(message);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Netrunner.Shared.Chat
@@ -11,6 +10,5 @@ namespace Netrunner.Shared.Chat
         public string Id { get; set; }
 
         public string Name { get; set; }
-        public List<ChatMessage> Messages { get; set; } = new();
     }
 }
