@@ -18,14 +18,15 @@ namespace Netrunner.Client.Services
 
     public class AuthService : IAuthService
     {
-        private const string AuthTokenStorageKey = "authToken";
+        public const string AuthTokenStorageKey = "authToken";
         private readonly HttpClient _httpClient;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly ILocalStorageService _localStorage;
         public Task<string> AccessToken => _localStorage.GetItemAsync<string>(AuthTokenStorageKey).AsTask();
 
 
-        public AuthService(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider, ILocalStorageService localStorage)
+        public AuthService(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider,
+            ILocalStorageService localStorage)
         {
             _httpClient = httpClient;
             _authenticationStateProvider = authenticationStateProvider;
@@ -62,9 +63,13 @@ namespace Netrunner.Client.Services
 
         private async Task Authenticate(AuthenticationResponse authentication)
         {
+            if (!authentication.Successful || string.IsNullOrWhiteSpace(authentication.AccessToken))
+                return;
             await _localStorage.SetItemAsync(AuthTokenStorageKey, authentication.AccessToken);
-            ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsAuthenticated(authentication.UserName);
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", authentication.AccessToken);
+            ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsAuthenticated(authentication
+                .UserName);
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("bearer", authentication.AccessToken);
         }
     }
 }

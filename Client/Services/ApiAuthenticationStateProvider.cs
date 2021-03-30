@@ -28,7 +28,7 @@ namespace Netrunner.Client.Services
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var savedToken = await _localStorage.GetItemAsync<string>("authToken");
+            var savedToken = await _localStorage.GetItemAsync<string>(AuthService.AuthTokenStorageKey);
             if (string.IsNullOrWhiteSpace(savedToken))
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
 
@@ -47,7 +47,8 @@ namespace Netrunner.Client.Services
 
         public void MarkUserAsAuthenticated(string userName)
         {
-            var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, userName)}, "apiAuth"));
+            var authenticatedUser =
+                new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, userName)}, "apiAuth"));
             var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
             NotifyAuthenticationStateChanged(authState);
         }
