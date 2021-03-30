@@ -8,7 +8,7 @@ using Netrunner.Shared;
 
 namespace Netrunner.Server.Hubs
 {
-    //[Authorize]
+    [Authorize]
     public class ChatHub : Hub
     {
         private readonly IMongoCollection<ChatMessage> _chatMessages;
@@ -16,7 +16,7 @@ namespace Netrunner.Server.Hubs
         public ChatHub(IDatabaseSettings settings)
         {
             var mongoClient = new MongoClient(settings.ConnectionString);
-            var database = mongoClient.GetDatabase(String.Empty);
+            var database = mongoClient.GetDatabase(string.Empty);
             _chatMessages = database.GetCollection<ChatMessage>(settings.ChatCollectionName);
         }
 

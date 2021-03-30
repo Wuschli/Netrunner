@@ -7,8 +7,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using JWT;
+using JWT.Algorithms;
 using JWT.Serializers;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace Netrunner.Client.Services
@@ -30,9 +32,17 @@ namespace Netrunner.Client.Services
             if (string.IsNullOrWhiteSpace(savedToken))
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
-
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt")));
+            try
+            {
+                var claims = ParseClaimsFromJwt(savedToken);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims, "jwt")));
+            }
+            catch (SecurityTokenExpiredException)
+            {
+                Console.WriteLine("Token was expired");
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            }
         }
 
         public void MarkUserAsAuthenticated(string userName)
@@ -53,8 +63,10 @@ namespace Netrunner.Client.Services
         {
             var claims = new List<Claim>();
             var serializer = new JsonNetSerializer();
+            var validator = new JwtValidator(serializer, new UtcDateTimeProvider());
             var urlEncoder = new JwtBase64UrlEncoder();
-            var decoder = new JwtDecoder(serializer, urlEncoder);
+            var algorithm = new HMACSHA256Algorithm();
+            var decoder = new JwtDecoder(serializer, validator, urlEncoder, algorithm);
 
             var decoded = decoder.Decode(token);
             Console.WriteLine(decoded);

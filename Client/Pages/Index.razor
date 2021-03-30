@@ -1,8 +1,10 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.SignalR.Client
 @using Microsoft.Extensions.DependencyInjection
+@using Netrunner.Client.Services
 @using Netrunner.Shared
 @inject NavigationManager NavigationManager
+@inject IAuthService AuthService
 @implements IAsyncDisposable
 
 <div class="form-group">
@@ -33,12 +35,11 @@
     private readonly List<ChatMessage> _messages = new List<ChatMessage>();
     private string _userInput;
     private string _messageInput;
-    private string _accessToken;
 
     protected override async Task OnInitializedAsync()
     {
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"), options => { options.AccessTokenProvider = () => Task.FromResult(_accessToken); })
+            .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"), options => { options.AccessTokenProvider = () => AuthService.AccessToken; })
             .AddMessagePackProtocol()
             .Build();
 

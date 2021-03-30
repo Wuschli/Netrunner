@@ -10,6 +10,7 @@ namespace Netrunner.Client.Services
 {
     public interface IAuthService
     {
+        Task<string> AccessToken { get; }
         Task<AuthenticationResponse> Login(LoginRequest login);
         Task Logout();
         Task<AuthenticationResponse> Register(RegistrationRequest registration);
@@ -17,9 +18,12 @@ namespace Netrunner.Client.Services
 
     public class AuthService : IAuthService
     {
+        private const string AuthTokenStorageKey = "authToken";
         private readonly HttpClient _httpClient;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly ILocalStorageService _localStorage;
+        public Task<string> AccessToken => _localStorage.GetItemAsync<string>(AuthTokenStorageKey).AsTask();
+
 
         public AuthService(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider, ILocalStorageService localStorage)
         {
@@ -51,14 +55,14 @@ namespace Netrunner.Client.Services
 
         public async Task Logout()
         {
-            await _localStorage.RemoveItemAsync("authToken");
+            await _localStorage.RemoveItemAsync(AuthTokenStorageKey);
             ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsLoggedOut();
             _httpClient.DefaultRequestHeaders.Authorization = null;
         }
 
         private async Task Authenticate(AuthenticationResponse authentication)
         {
-            await _localStorage.SetItemAsync("authToken", authentication.AccessToken);
+            await _localStorage.SetItemAsync(AuthTokenStorageKey, authentication.AccessToken);
             ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsAuthenticated(authentication.UserName);
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", authentication.AccessToken);
         }
