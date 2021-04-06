@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using JWT;
 using JWT.Algorithms;
+using JWT.Builder;
 using JWT.Serializers;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -20,6 +21,8 @@ namespace Netrunner.Client.Services
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
 
+        private AuthenticationState AnonymousState => new(new ClaimsPrincipal(new ClaimsIdentity()));
+
         public ApiAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorage)
         {
             _httpClient = httpClient;
@@ -29,19 +32,29 @@ namespace Netrunner.Client.Services
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             var savedToken = await _localStorage.GetItemAsync<string>(AuthService.AuthTokenStorageKey);
+
             if (string.IsNullOrWhiteSpace(savedToken))
-                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                return AnonymousState;
 
             try
             {
                 var claims = ParseClaimsFromJwt(savedToken);
+
+                var expiry = claims.FirstOrDefault(c => c.Type.Equals("exp"));
+                if (expiry == null)
+                    return AnonymousState;
+
+                var expiryDateTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expiry.Value));
+                if (expiryDateTime.DateTime < DateTime.UtcNow)
+                    return AnonymousState;
+
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims, "jwt")));
             }
             catch (SecurityTokenExpiredException)
             {
                 Console.WriteLine("Token was expired");
-                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                return AnonymousState;
             }
         }
 
@@ -64,16 +77,16 @@ namespace Netrunner.Client.Services
         {
             var claims = new List<Claim>();
             var serializer = new JsonNetSerializer();
-            var validator = new JwtValidator(serializer, new UtcDateTimeProvider());
-            var urlEncoder = new JwtBase64UrlEncoder();
+            var dateTimeProvider = new UtcDateTimeProvider();
+            var validator = new JwtValidator(serializer, dateTimeProvider);
             var algorithm = new HMACSHA256Algorithm();
-            var decoder = new JwtDecoder(serializer, validator, urlEncoder, algorithm);
 
-            var decoded = decoder.Decode(token);
-            Console.WriteLine(decoded);
+            var payload = JwtBuilder.Create()
+                .WithAlgorithm(algorithm)
+                .WithValidator(validator)
+                .Decode<IDictionary<string, object>>(token);
 
-            var keyValuePairs = JsonConvert.DeserializeObject<Dictionary<string, object>>(decoded);
-            if (keyValuePairs.TryGetValue(ClaimTypes.Role, out object roles) && roles != null)
+            if (payload.TryGetValue(ClaimTypes.Role, out object roles) && roles != null)
             {
                 if (roles.ToString().Trim().StartsWith("["))
                 {
@@ -89,10 +102,10 @@ namespace Netrunner.Client.Services
                     claims.Add(new Claim(ClaimTypes.Role, roles.ToString()));
                 }
 
-                keyValuePairs.Remove(ClaimTypes.Role);
+                payload.Remove(ClaimTypes.Role);
             }
 
-            claims.AddRange(keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())));
+            claims.AddRange(payload.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())));
 
             return claims;
         }
