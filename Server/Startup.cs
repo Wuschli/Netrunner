@@ -18,6 +18,7 @@ using Netrunner.Server.Hubs;
 using Netrunner.Server.Identity;
 using Netrunner.Server.Identity.Data;
 using Netrunner.Server.Models;
+using Netrunner.Server.Services;
 
 namespace Netrunner.Server
 {
@@ -99,7 +100,7 @@ namespace Netrunner.Server
                         ValidateAudience = true,
                         ValidAudience = jwtSettings.Audience,
                         ValidateLifetime = true,
-                        ClockSkew = TimeSpan.FromMinutes(1)
+                        ClockSkew = TimeSpan.FromMinutes(1),
                     };
                     options.Events = new JwtBearerEvents
                     {
@@ -132,9 +133,11 @@ namespace Netrunner.Server
             });
 
             services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseResponseCompression();
@@ -165,6 +168,11 @@ namespace Netrunner.Server
                 endpoints.MapHub<ChatHub>("/chathub");
                 endpoints.MapFallbackToFile("index.html");
             });
+        }
+
+        private bool ValidateTokenLifetime(DateTime? notbefore, DateTime? expires, SecurityToken securitytoken, TokenValidationParameters validationparameters)
+        {
+            throw new NotImplementedException();
         }
     }
 }

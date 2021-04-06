@@ -1,8 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,88 +8,125 @@ using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
 using Netrunner.Server.Identity.Data;
 using Netrunner.Server.Models;
+using Netrunner.Server.Services;
 using Netrunner.Shared.Chat;
 
 namespace Netrunner.Server.Controllers.V1.Chat
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class RoomController : ControllerBase
     {
         private readonly IMongoCollection<ChatRoom> _rooms;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserService _userService;
 
-        public RoomController(IDatabaseSettings settings, UserManager<ApplicationUser> userManager)
+        public RoomController(IDatabaseSettings settings, UserManager<ApplicationUser> userManager, IUserService userService)
         {
             _userManager = userManager;
+            _userService = userService;
             var mongoClient = new MongoClient(settings.ConnectionString);
             var database = mongoClient.GetDatabase(settings.DatabaseName);
             _rooms = database.GetCollection<ChatRoom>(settings.ChatRoomCollectionName);
         }
 
         [HttpGet]
-        public async Task<IEnumerable<ChatRoom>> Get()
+        public async Task<ActionResult<IEnumerable<ChatRoom>>> GetAllRooms()
         {
-            return await _rooms.Find(FilterDefinition<ChatRoom>.Empty).ToListAsync();
+            var user = await _userService.GetCurrentUser();
+            if (user == null)
+                return Forbid();
+
+            var filter = Builders<ChatRoom>.Filter.In(room => room.Id, user.Rooms);
+            return await _rooms.Find(filter).ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ChatRoom>> Get(string id)
+        public async Task<ActionResult<ChatRoom>> GetRoom(string id)
         {
-            return await _rooms.Find(room => room.Id == id).FirstAsync();
+            var user = await _userService.GetCurrentUser();
+            if (user == null)
+                return Forbid();
+            var room = await _rooms.Find(r => r.Id == id).FirstOrDefaultAsync();
+            if (room == null)
+                return NotFound();
+            if (room.Members.Contains(user.Id) || room.Invitations.Contains(user.Id))
+                return room;
+            return NotFound();
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] ChatRoom value)
+        public async Task<ActionResult> Create([FromBody] CreateChatRoom room)
         {
-            await _rooms.InsertOneAsync(value);
-            return Ok();
+            var user = await _userService.GetCurrentUser();
+            if (user == null)
+                return Forbid();
+            var dbRoom = new ChatRoom
+            {
+                Name = room.Name,
+                Invitations = new List<Guid>(),
+                Members = new List<Guid> {user.Id}
+            };
+            await _rooms.InsertOneAsync(dbRoom);
+
+            var identityResult = await AddRoomToUser(user, dbRoom.Id);
+            if (identityResult.Succeeded)
+                return CreatedAtAction(nameof(GetRoom), new {id = dbRoom.Id}, dbRoom);
+            return StatusCode(StatusCodes.Status500InternalServerError, "Could not add room to user");
         }
 
         [HttpPost("join/{id}")]
         public async Task<ActionResult> Join(string id)
         {
-            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdString, out var userId))
+            var user = await _userService.GetCurrentUser();
+            if (user == null)
                 return Forbid();
 
             var room = await _rooms.Find(r => r.Id == id).FirstAsync();
             if (room == null)
                 return NotFound();
 
-            if (room.Members.Contains(userId))
+            if (room.Members.Contains(user.Id))
                 return Ok();
 
-            if (room.Invitations == null || !room.Invitations.Contains(userId))
+            if (room.Invitations == null || !room.Invitations.Contains(user.Id))
                 return Forbid();
 
             var update = Builders<ChatRoom>.Update
-                .Push(r => r.Members, userId)
-                .Pull(r => r.Invitations, userId);
+                .Push(r => r.Members, user.Id)
+                .Pull(r => r.Invitations, user.Id);
 
             var result = await _rooms.FindOneAndUpdateAsync(r => r.Id == id, update);
             if (result == null)
                 return NotFound();
 
-            var user = _userManager.Users.Single(r => r.Id == userId);
+            var identityResult = await AddRoomToUser(user, room.Id);
+            if (identityResult.Succeeded)
+                return Ok();
 
+            return StatusCode(StatusCodes.Status500InternalServerError, "Could not add room to user");
+        }
+
+        private async Task<IdentityResult> AddRoomToUser(ApplicationUser user, string roomId)
+        {
             if (user.Rooms == null!)
                 user.Rooms = new List<string>();
             if (user.Invitations == null!)
                 user.Invitations = new List<string>();
 
+            user.Rooms.Add(roomId);
+            user.Invitations.Remove(roomId);
 
-            user.Rooms.Add(room.Id);
-            user.Invitations.Remove(room.Id);
+            IdentityResult result = IdentityResult.Failed();
             for (int i = 0; i < 5; i++)
             {
-                var identityResult = await _userManager.UpdateAsync(user);
-                if (identityResult.Succeeded)
-                    return Ok();
+                result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                    return result;
             }
 
-            return StatusCode(StatusCodes.Status500InternalServerError, "Could not add room to user");
+            return result;
         }
     }
 }

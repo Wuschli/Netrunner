@@ -47,7 +47,7 @@ namespace Netrunner.Server.Controllers.V1.Chat
         }
 
         [HttpPost]
-        public async Task<ActionResult> SendMessage([FromBody] ChatMessage message)
+        public async Task<ActionResult> SendMessage([FromBody] SendChatMessage message)
         {
             if (string.IsNullOrWhiteSpace(message.RoomId))
                 return BadRequest("No room given");
@@ -60,11 +60,17 @@ namespace Netrunner.Server.Controllers.V1.Chat
             if (!Guid.TryParse(userIdString, out var userId) || room.Members == null || !room.Members.Contains(userId))
                 return Forbid();
 
-            message.Timestamp = DateTime.Now;
-            message.Sender = userId;
-            await _messages.InsertOneAsync(message);
+            var dbMessage = new ChatMessage
+            {
+                Sender = userId,
+                Timestamp = DateTime.Now,
+                Message = message.Message,
+                RoomId = message.RoomId
+            };
 
-            await _chatHubContext.Clients.Group($"room{message.RoomId}").ReceiveMessage(message);
+            await _messages.InsertOneAsync(dbMessage);
+
+            await _chatHubContext.Clients.Group($"room{dbMessage.RoomId}").ReceiveMessage(dbMessage);
 
             return Ok();
         }
