@@ -85,7 +85,7 @@ namespace Netrunner.Server.Controllers.V1.Identity
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
-            var jwtResult = _jwtAuthManager.GenerateTokens(user.UserName, claims, DateTime.Now);
+            var jwtResult = _jwtAuthManager.GenerateTokens(user.UserName, claims, DateTime.UtcNow);
 
             var response = new AuthenticationResponse
             {
