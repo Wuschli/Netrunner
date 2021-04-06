@@ -8,13 +8,15 @@
 @inject HttpClient Http
 @implements IAsyncDisposable
 
-<div class="form-group">
-    <label>
-        Message:
-        <input @bind="_messageInput" size="50"/>
-    </label>
-</div>
-<button @onclick="Send" disabled="@(!IsConnected)">Send</button>
+<form @onsubmit="Send">
+    <div class="form-group">
+        <label>
+            Message:
+            <input @bind="_messageInput" size="50"/>
+        </label>
+    </div>
+    <button disabled="@(!IsConnected)">Send</button>
+</form>
 
 <hr>
 
@@ -51,12 +53,15 @@
             _messages.AddRange(messages.Reverse());
     }
 
-    Task Send() =>
-        Http.PostAsJsonAsync("api/v1/message", new ChatMessage
+    async Task Send()
+    {
+        await Http.PostAsJsonAsync("api/v1/message", new ChatMessage
         {
             Message = _messageInput,
             RoomId = _roomId
         });
+        _messageInput = string.Empty;
+    }
 
 
     public bool IsConnected =>
