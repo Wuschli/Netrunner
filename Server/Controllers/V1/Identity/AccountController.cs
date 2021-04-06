@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -78,12 +79,12 @@ namespace Netrunner.Server.Controllers.V1.Identity
         private async Task<AuthenticationResponse> AuthenticateAsync(ApplicationUser user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, string.Join(",", roles)),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var jwtResult = _jwtAuthManager.GenerateTokens(user.UserName, claims, DateTime.UtcNow);
 

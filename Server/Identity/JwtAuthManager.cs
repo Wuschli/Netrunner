@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -45,9 +46,9 @@ namespace Netrunner.Server.Identity
             }
         }
 
-        public JwtAuthResult GenerateTokens(string username, Claim[] claims, DateTime now)
+        public JwtAuthResult GenerateTokens(string username, ICollection<Claim> claims, DateTime now)
         {
-            var shouldAddAudienceClaim = string.IsNullOrWhiteSpace(claims?.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Aud)?.Value);
+            var shouldAddAudienceClaim = string.IsNullOrWhiteSpace(claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Aud)?.Value);
             var jwtToken = new JwtSecurityToken(
                 _jwtSettings.Issuer,
                 shouldAddAudienceClaim ? _jwtSettings.Audience : string.Empty,
