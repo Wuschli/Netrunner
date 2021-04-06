@@ -1,0 +1,26 @@
+﻿@using Netrunner.Client.Services
+@inject NavigationManager NavigationManager
+@inject IAuthService AuthService
+@inject HttpClient Http
+
+@if (!string.IsNullOrWhiteSpace(RoomId))
+{
+    <form @onsubmit="Send">
+        <div class="form-group">
+            <label>
+                Message:
+                <input @bind="_messageInput" size="50"/>
+            </label>
+        </div>
+        <button disabled="@(!IsConnected)">Send</button>
+    </form>
+
+    <hr>
+
+    <ul id="messagesList">
+        @foreach (var message in _messages)
+        {
+            <li>@message.Timestamp: @message.Sender: @message.Message</li>
+        }
+    </ul>
+}

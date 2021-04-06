@@ -1,0 +1,31 @@
+﻿@using Netrunner.Shared.Chat
+@inject HttpClient Http
+<h3>Rooms</h3>
+
+<ul>
+    @if (_rooms == null)
+    {
+        <p>
+            <em>loading...</em>
+        </p>
+    }
+    else
+    {
+        @foreach (var room in _rooms)
+        {
+            <li>
+                <a href="@room.Id">@room.Name</a>
+            </li>
+        }
+    }
+</ul>
+
+@code {
+    private IEnumerable<ChatRoom> _rooms;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _rooms = await Http.GetFromJsonAsync<IEnumerable<ChatRoom>>($"api/v1/room");
+    }
+
+}

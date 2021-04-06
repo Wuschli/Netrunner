@@ -1,75 +1,16 @@
-﻿@page "/"
-@using Microsoft.AspNetCore.SignalR.Client
-@using Microsoft.Extensions.DependencyInjection
-@using Netrunner.Client.Services
-@using Netrunner.Shared.Chat
-@inject NavigationManager NavigationManager
-@inject IAuthService AuthService
-@inject HttpClient Http
-@implements IAsyncDisposable
+﻿@page "/{roomId?}"
 
-<form @onsubmit="Send">
-    <div class="form-group">
-        <label>
-            Message:
-            <input @bind="_messageInput" size="50"/>
-        </label>
-    </div>
-    <button disabled="@(!IsConnected)">Send</button>
-</form>
+@if (!string.IsNullOrWhiteSpace(RoomId))
+{
+    <Chat RoomId=@RoomId/>
+}
+else
+{
+    <Rooms/>
+}
 
-<hr>
-
-<ul id="messagesList">
-    @foreach (var message in _messages)
-    {
-        <li>@message.Timestamp: @message.Sender: @message.Message</li>
-    }
-</ul>
-
-@code {
-    private HubConnection _hubConnection;
-    private readonly List<ChatMessage> _messages = new List<ChatMessage>();
-    private string _messageInput;
-    private string _roomId = "6063823dd743649dead706b1";
-
-    protected override async Task OnInitializedAsync()
-    {
-        _hubConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"), options => { options.AccessTokenProvider = () => AuthService.AccessToken; })
-            .AddMessagePackProtocol()
-            .Build();
-
-        _hubConnection.On<ChatMessage>("ReceiveMessage", (message) =>
-        {
-            _messages.Add(message);
-            StateHasChanged();
-        });
-
-        await _hubConnection.StartAsync();
-
-        var messages = await Http.GetFromJsonAsync<IEnumerable<ChatMessage>>($"api/v1/message/{_roomId}");
-        if (messages != null)
-            _messages.AddRange(messages.Reverse());
-    }
-
-    async Task Send()
-    {
-        await Http.PostAsJsonAsync("api/v1/message", new ChatMessage
-        {
-            Message = _messageInput,
-            RoomId = _roomId
-        });
-        _messageInput = string.Empty;
-    }
-
-
-    public bool IsConnected =>
-        _hubConnection.State == HubConnectionState.Connected;
-
-    public async ValueTask DisposeAsync()
-    {
-        await _hubConnection.DisposeAsync();
-    }
-
+@code
+{
+    [Parameter]
+    public string RoomId { get; set; } // = "6063823dd743649dead706b1";
 }
