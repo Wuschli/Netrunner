@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Driver;
@@ -13,7 +14,7 @@ namespace Netrunner.Server.Controllers.V1.Chat
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class MessageController : ControllerBase
     {
         private readonly IHubContext<ChatHub, IChatHub> _chatHubContext;
@@ -51,7 +52,6 @@ namespace Netrunner.Server.Controllers.V1.Chat
             if (string.IsNullOrWhiteSpace(message.RoomId))
                 return BadRequest("No room given");
 
-
             var room = await _rooms.Find(r => r.Id == message.RoomId).FirstOrDefaultAsync();
             if (room == null)
                 return NotFound("Room not found");
@@ -61,6 +61,7 @@ namespace Netrunner.Server.Controllers.V1.Chat
                 return Forbid();
 
             message.Timestamp = DateTime.Now;
+            message.Sender = userId;
             await _messages.InsertOneAsync(message);
 
             await _chatHubContext.Clients.Group($"room{message.RoomId}").ReceiveMessage(message);

@@ -11,3 +11,4 @@ services:
       - ./mongodb_data:/data/db
     ports:
       - '27017-27019:27017-27019'
+    restart: always

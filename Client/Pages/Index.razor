@@ -10,12 +10,6 @@
 
 <div class="form-group">
     <label>
-        User:
-        <input @bind="_userInput"/>
-    </label>
-</div>
-<div class="form-group">
-    <label>
         Message:
         <input @bind="_messageInput" size="50"/>
     </label>
@@ -34,7 +28,6 @@
 @code {
     private HubConnection _hubConnection;
     private readonly List<ChatMessage> _messages = new List<ChatMessage>();
-    private string _userInput;
     private string _messageInput;
     private string _roomId = "6063823dd743649dead706b1";
 
@@ -61,7 +54,6 @@
     Task Send() =>
         Http.PostAsJsonAsync("api/v1/message", new ChatMessage
         {
-            Sender = _userInput,
             Message = _messageInput,
             RoomId = _roomId
         });
