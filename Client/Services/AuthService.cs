@@ -42,6 +42,10 @@ namespace Netrunner.Client.Services
             };
             var response = await _httpClient.PostAsJsonAsync("api/v1/account/register", model);
             var result = await response.Content.ReadFromJsonAsync<AuthenticationResponse>();
+
+            if (!response.IsSuccessStatusCode)
+                return result;
+
             await Authenticate(result);
             return result;
         }
