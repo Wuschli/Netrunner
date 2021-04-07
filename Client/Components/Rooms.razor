@@ -2,23 +2,23 @@
 @inject HttpClient Http
 <h3>Rooms</h3>
 
-<ul>
-    @if (_rooms == null)
-    {
-        <p>
-            <em>loading...</em>
-        </p>
-    }
-    else
-    {
+@if (_rooms == null)
+{
+    <p>
+        <em>loading...</em>
+    </p>
+}
+else
+{
+    <ul>
         @foreach (var room in _rooms)
         {
             <li>
                 <a href="@room.Id">@room.Name</a>
             </li>
         }
-    }
-</ul>
+    </ul>
+}
 
 @code {
     private IEnumerable<ChatRoom> _rooms;

@@ -15,6 +15,7 @@ namespace Netrunner.Client.Components
         private HubConnection _hubConnection;
         private readonly List<ChatMessage> _messages = new();
         private string _messageInput;
+        private ChatRoom? _room;
 
         [Parameter]
         public string RoomId { get; set; }
@@ -49,6 +50,8 @@ namespace Netrunner.Client.Components
             var messages = await Http.GetFromJsonAsync<IEnumerable<ChatMessage>>($"api/v1/message/{RoomId}");
             if (messages != null)
                 _messages.AddRange(messages.Reverse());
+
+            _room = await Http.GetFromJsonAsync<ChatRoom>($"api/v1/room/{RoomId}");
         }
 
         private async Task Send()

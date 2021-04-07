@@ -1,57 +1,35 @@
-﻿@using Netrunner.Shared.Identity
-@using Netrunner.Client.Services
+﻿@using Netrunner.Client.Services
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 
 <h3>Login</h3>
 
-@if (ShowErrors)
+@if (_showErrors)
 {
     <div class="alert alert-danger" role="alert">
-        <p>@Error</p>
+        <p>@_error</p>
     </div>
 }
 
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">Please enter your details</h5>
-        <EditForm Model="login" OnValidSubmit="HandleLogin">
+        <EditForm Model="_model" OnValidSubmit="HandleLogin">
             <DataAnnotationsValidator/>
             <ValidationSummary/>
 
             <div class="form-group">
                 <label for="userName">User Name</label>
-                <InputText Id="userName" Class="form-control" @bind-Value="login.UserName"/>
-                <ValidationMessage For="@(() => login.UserName)"/>
+                <InputText Id="userName" Class="form-control" @bind-Value="_model.UserName"/>
+                <ValidationMessage For="@(() => _model.UserName)"/>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <InputText Id="password" type="password" Class="form-control" @bind-Value="login.Password"/>
-                <ValidationMessage For="@(() => login.Password)"/>
+                <InputText Id="password" type="password" Class="form-control" @bind-Value="_model.Password"/>
+                <ValidationMessage For="@(() => _model.Password)"/>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
+            <button @onclick="HandleRegister" class="btn btn-primary">Register</button>
         </EditForm>
     </div>
 </div>
-
-@code {
-    private LoginRequest login = new LoginRequest();
-    private bool ShowErrors;
-    private string Error = "";
-
-    private async Task HandleLogin()
-    {
-        ShowErrors = false;
-        var result = await AuthService.Login(login);
-        if (result.Successful)
-        {
-            NavigationManager.NavigateTo("/");
-        }
-        else
-        {
-            Error = result.Error;
-            ShowErrors = true;
-        }
-    }
-
-}

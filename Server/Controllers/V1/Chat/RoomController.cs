@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +38,9 @@ namespace Netrunner.Server.Controllers.V1.Chat
             var user = await _userService.GetCurrentUser();
             if (user == null)
                 return Forbid();
+
+            if (user.Rooms == null)
+                return Ok(Enumerable.Empty<ChatRoom>());
 
             var filter = Builders<ChatRoom>.Filter.In(room => room.Id, user.Rooms);
             return await _rooms.Find(filter).ToListAsync();

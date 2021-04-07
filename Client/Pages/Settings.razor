@@ -1,0 +1,16 @@
+﻿@page "/settings"
+@using Netrunner.Client.Services
+@inject IAuthService AuthService
+
+<h3>Settings</h3>
+
+<button @onclick="HandleLogout">Logout</button>
+
+@code {
+
+    private Task HandleLogout()
+    {
+        return AuthService.Logout();
+    }
+
+}

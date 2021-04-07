@@ -7,8 +7,8 @@ namespace Netrunner.Server.Identity.Data
     [CollectionName("Users")]
     public class ApplicationUser : MongoIdentityUser
     {
-        public ICollection<string> Rooms { get; set; }
-        public ICollection<string> Invitations { get; set; }
+        public ICollection<string>? Rooms { get; set; }
+        public ICollection<string>? Invitations { get; set; }
 
         public ApplicationUser() : base()
         {

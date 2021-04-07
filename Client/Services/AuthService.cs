@@ -11,9 +11,9 @@ namespace Netrunner.Client.Services
     public interface IAuthService
     {
         Task<string> AccessToken { get; }
-        Task<AuthenticationResponse> Login(LoginRequest login);
+        Task<AuthenticationResponse> Login(string userName, string password);
         Task Logout();
-        Task<AuthenticationResponse> Register(RegistrationRequest registration);
+        Task<AuthenticationResponse> Register(string userName, string password);
     }
 
     public class AuthService : IAuthService
@@ -33,17 +33,27 @@ namespace Netrunner.Client.Services
             _localStorage = localStorage;
         }
 
-        public async Task<AuthenticationResponse> Register(RegistrationRequest registration)
+        public async Task<AuthenticationResponse> Register(string userName, string password)
         {
-            var response = await _httpClient.PostAsJsonAsync("api/v1/account/register", registration);
+            var model = new RegistrationRequest
+            {
+                UserName = userName,
+                Password = password
+            };
+            var response = await _httpClient.PostAsJsonAsync("api/v1/account/register", model);
             var result = await response.Content.ReadFromJsonAsync<AuthenticationResponse>();
             await Authenticate(result);
             return result;
         }
 
-        public async Task<AuthenticationResponse> Login(LoginRequest login)
+        public async Task<AuthenticationResponse> Login(string userName, string password)
         {
-            var response = await _httpClient.PostAsJsonAsync("api/v1/account/Login", login);
+            var model = new LoginRequest
+            {
+                UserName = userName,
+                Password = password
+            };
+            var response = await _httpClient.PostAsJsonAsync("api/v1/account/Login", model);
             var result = await response.Content.ReadFromJsonAsync<AuthenticationResponse>();
 
             if (!response.IsSuccessStatusCode)
