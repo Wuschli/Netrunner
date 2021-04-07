@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using Netrunner.Server.Hubs;
 using Netrunner.Server.Identity;
 using Netrunner.Server.Identity.Data;
+using Netrunner.Server.Mapping;
 using Netrunner.Server.Models;
 using Netrunner.Server.Services;
 
@@ -131,6 +132,8 @@ namespace Netrunner.Server
                 opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
                     new[] {"application/octet-stream"});
             });
+
+            services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfile>(); });
 
             services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
             services.AddScoped<IUserService, UserService>();

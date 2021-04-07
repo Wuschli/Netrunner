@@ -1,6 +1,27 @@
 ﻿@page "/users"
+@using Netrunner.Shared.User
+@inject HttpClient Http
+
 <h3>Users</h3>
+@if (_users == null)
+{
+    <Loading/>
+}
+else
+{
+    @foreach (var user in _users)
+    {
+        <User UserProfile="@user"></User>
+    }
+}
 
 @code {
+
+    private IEnumerable<UserProfile> _users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _users = await Http.GetFromJsonAsync<IEnumerable<UserProfile>>("api/v1/user");
+    }
 
 }
