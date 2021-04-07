@@ -13,13 +13,13 @@ namespace Netrunner.Client.Components
         {
             _showErrors = false;
             var result = await AuthService.Login(_model.UserName, _model.Password);
-            if (result.Successful)
+            if (result?.Successful == true)
             {
                 NavigationManager.NavigateTo("/");
             }
             else
             {
-                _error = result.Error;
+                _error = result?.Error ?? "No answer from server";
                 _showErrors = true;
             }
         }
@@ -28,13 +28,13 @@ namespace Netrunner.Client.Components
         {
             _showErrors = false;
             var result = await AuthService.Register(_model.UserName, _model.Password);
-            if (result.Successful)
+            if (result?.Successful == true)
             {
                 NavigationManager.NavigateTo("/");
             }
             else
             {
-                _error = result.Error;
+                _error = result?.Error ?? "No answer from server";
                 _showErrors = true;
             }
         }
@@ -42,11 +42,11 @@ namespace Netrunner.Client.Components
         private class Model
         {
             [Required]
-            public string UserName { get; set; }
+            public string? UserName { get; set; }
 
             [Required]
             [DataType(DataType.Password)]
-            public string Password { get; set; }
+            public string? Password { get; set; }
         }
     }
 }

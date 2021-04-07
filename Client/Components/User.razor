@@ -1,11 +1,11 @@
 ﻿@using Netrunner.Shared.User
 <p>
-    <em>@UserProfile.UserName</em>
+    <em>@Profile?.UserName</em>
 </p>
 
 @code {
 
     [Parameter]
-    public UserProfile UserProfile { get; set; }
+    public UserProfile? Profile { get; set; }
 
 }

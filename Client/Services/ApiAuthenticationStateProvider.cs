@@ -84,11 +84,11 @@ namespace Netrunner.Client.Services
             var payload = JwtBuilder.Create()
                 .WithAlgorithm(algorithm)
                 .WithValidator(validator)
-                .Decode<IDictionary<string, object>>(token);
+                .Decode<IDictionary<string, object?>>(token);
 
-            if (payload.TryGetValue(ClaimTypes.Role, out object roles) && roles != null)
+            if (payload.TryGetValue(ClaimTypes.Role, out object? roles) && roles != null)
             {
-                if (roles.ToString().Trim().StartsWith("["))
+                if (roles.ToString()!.Trim().StartsWith("["))
                 {
                     var parsedRoles = JsonConvert.DeserializeObject<string[]>(roles.ToString());
 
@@ -99,13 +99,13 @@ namespace Netrunner.Client.Services
                 }
                 else
                 {
-                    claims.Add(new Claim(ClaimTypes.Role, roles.ToString()));
+                    claims.Add(new Claim(ClaimTypes.Role, roles.ToString()!));
                 }
 
                 payload.Remove(ClaimTypes.Role);
             }
 
-            claims.AddRange(payload.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())));
+            claims.AddRange(payload.Select(kvp => new Claim(kvp.Key, kvp.Value?.ToString() ?? string.Empty)));
 
             return claims;
         }

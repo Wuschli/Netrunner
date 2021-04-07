@@ -11,9 +11,9 @@ namespace Netrunner.Client.Services
     public interface IAuthService
     {
         Task<string> AccessToken { get; }
-        Task<AuthenticationResponse> Login(string userName, string password);
+        Task<AuthenticationResponse?> Login(string? userName, string? password);
         Task Logout();
-        Task<AuthenticationResponse> Register(string userName, string password);
+        Task<AuthenticationResponse?> Register(string? userName, string? password);
     }
 
     public class AuthService : IAuthService
@@ -33,7 +33,7 @@ namespace Netrunner.Client.Services
             _localStorage = localStorage;
         }
 
-        public async Task<AuthenticationResponse> Register(string userName, string password)
+        public async Task<AuthenticationResponse?> Register(string? userName, string? password)
         {
             var model = new RegistrationRequest
             {
@@ -50,7 +50,7 @@ namespace Netrunner.Client.Services
             return result;
         }
 
-        public async Task<AuthenticationResponse> Login(string userName, string password)
+        public async Task<AuthenticationResponse?> Login(string? userName, string? password)
         {
             var model = new LoginRequest
             {
@@ -75,9 +75,9 @@ namespace Netrunner.Client.Services
             _httpClient.DefaultRequestHeaders.Authorization = null;
         }
 
-        private async Task Authenticate(AuthenticationResponse authentication)
+        private async Task Authenticate(AuthenticationResponse? authentication)
         {
-            if (!authentication.Successful || string.IsNullOrWhiteSpace(authentication.AccessToken))
+            if (authentication == null || !authentication.Successful || string.IsNullOrWhiteSpace(authentication.AccessToken))
                 return;
             await _localStorage.SetItemAsync(AuthTokenStorageKey, authentication.AccessToken);
             ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsAuthenticated(authentication

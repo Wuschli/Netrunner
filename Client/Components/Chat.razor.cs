@@ -12,16 +12,16 @@ namespace Netrunner.Client.Components
 {
     public partial class Chat : IAsyncDisposable
     {
-        private HubConnection _hubConnection;
+        private HubConnection? _hubConnection;
         private readonly List<ChatMessage> _messages = new();
-        private string _messageInput;
+        private string? _messageInput;
         private ChatRoom? _room;
 
         [Parameter]
-        public string RoomId { get; set; }
+        public string? RoomId { get; set; }
 
         public bool IsConnected =>
-            _hubConnection.State == HubConnectionState.Connected;
+            _hubConnection?.State == HubConnectionState.Connected;
 
         protected override async Task OnInitializedAsync()
         {
@@ -67,7 +67,8 @@ namespace Netrunner.Client.Components
 
         public async ValueTask DisposeAsync()
         {
-            await _hubConnection.DisposeAsync();
+            if (_hubConnection != null)
+                await _hubConnection.DisposeAsync();
         }
     }
 }

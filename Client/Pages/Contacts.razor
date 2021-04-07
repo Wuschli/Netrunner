@@ -1,4 +1,4 @@
-﻿@page "/users"
+﻿@page "/contacts"
 @using Netrunner.Shared.User
 @inject HttpClient Http
 
@@ -11,13 +11,13 @@ else
 {
     @foreach (var user in _users)
     {
-        <User UserProfile="@user"></User>
+        <User Profile="@user"></User>
     }
 }
 
 @code {
 
-    private IEnumerable<UserProfile> _users;
+    private IEnumerable<UserProfile>? _users;
 
     protected override async Task OnInitializedAsync()
     {
