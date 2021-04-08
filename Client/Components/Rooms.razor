@@ -12,17 +12,24 @@ else
         @foreach (var room in _rooms)
         {
             <li>
-                <a href="@room.Id">@room.Name</a>
+                <a href="@($"chat/{room.Id}")">@room.Name</a>
             </li>
         }
     </ul>
 }
 
 @code {
+#nullable enable
     private IEnumerable<ChatRoom>? _rooms;
 
     protected override async Task OnInitializedAsync()
     {
+        await Refresh();
+    }
+
+    public async Task Refresh()
+    {
+        Console.WriteLine("Refresh Chat Rooms");
         _rooms = await Http.GetFromJsonAsync<IEnumerable<ChatRoom>>($"api/v1/room");
     }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -64,6 +65,12 @@ namespace Netrunner.Client.Components
             _messageInput = string.Empty;
         }
 
+
+        private async Task LeaveRoom()
+        {
+            await Http.PostAsync($"api/v1/room/leave/{RoomId}", new StringContent(string.Empty));
+            NavigationManager.NavigateTo("chat");
+        }
 
         public async ValueTask DisposeAsync()
         {

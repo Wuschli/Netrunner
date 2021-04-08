@@ -6,6 +6,7 @@
 @if (!string.IsNullOrWhiteSpace(RoomId))
 {
     <h3>@_room?.Name</h3>
+    <button @onclick="LeaveRoom">Leave</button>
     <form @onsubmit="Send">
         <div class="form-group">
             <label>

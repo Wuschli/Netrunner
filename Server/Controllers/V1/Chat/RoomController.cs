@@ -112,6 +112,44 @@ namespace Netrunner.Server.Controllers.V1.Chat
             return StatusCode(StatusCodes.Status500InternalServerError, "Could not add room to user");
         }
 
+        [HttpPost("leave/{id}")]
+        public async Task<ActionResult> Leave(string id)
+        {
+            var user = await _userService.GetCurrentUser();
+            if (user == null)
+                return Forbid();
+
+            var room = await _rooms.Find(r => r.Id == id).FirstAsync();
+            if (room == null)
+                return NotFound();
+
+            if (!room.Members.Contains(user.Id))
+                return NotFound();
+
+            var update = Builders<ChatRoom>.Update
+                .Pull(r => r.Members, user.Id);
+
+            var options = new FindOneAndUpdateOptions<ChatRoom>
+            {
+                ReturnDocument = ReturnDocument.After
+            };
+
+            var result = await _rooms.FindOneAndUpdateAsync<ChatRoom>(r => r.Id == id, update, options);
+            if (result == null)
+                return NotFound();
+
+            if (!result.Members.Any())
+            {
+                var deleteResult = await DeleteRoom(result.Id);
+            }
+
+            var identityResult = await RemoveRoomFromUser(user, room.Id);
+            if (identityResult.Succeeded)
+                return Ok();
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Could not remove room from user");
+        }
+
         private async Task<IdentityResult> AddRoomToUser(ApplicationUser user, string roomId)
         {
             if (user.Rooms == null!)
@@ -131,6 +169,31 @@ namespace Netrunner.Server.Controllers.V1.Chat
             }
 
             return result;
+        }
+
+        private async Task<IdentityResult> RemoveRoomFromUser(ApplicationUser user, string roomId)
+        {
+            if (user.Rooms == null!)
+                user.Rooms = new List<string>();
+            if (user.Invitations == null!)
+                user.Invitations = new List<string>();
+
+            user.Rooms.Remove(roomId);
+
+            IdentityResult result = IdentityResult.Failed();
+            for (int i = 0; i < 5; i++)
+            {
+                result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                    return result;
+            }
+
+            return result;
+        }
+
+        private async Task<DeleteResult> DeleteRoom(string roomId)
+        {
+            return await _rooms.DeleteOneAsync(room => room.Id == roomId);
         }
     }
 }

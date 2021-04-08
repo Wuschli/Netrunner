@@ -1,5 +1,7 @@
 ﻿@page "/chat/{roomId?}"
 @page "/"
+@using Netrunner.Shared.Chat
+@inject HttpClient Http
 
 @if (!string.IsNullOrWhiteSpace(RoomId))
 {
@@ -7,11 +9,39 @@
 }
 else
 {
-    <Rooms/>
+    <Rooms @ref="RoomsComponent"/>
+
+    <form @onsubmit="HandleCreateRoom">
+        <div class="form-group">
+            <label>
+                Name:
+                <input @bind="_newRoomInput" size="50"/>
+            </label>
+        </div>
+        <button>Create Room</button>
+    </form>
 }
 
 @code
 {
+#nullable enable
     [Parameter]
     public string? RoomId { get; set; }
+
+    protected Rooms? RoomsComponent;
+
+    private string? _newRoomInput;
+
+    private async Task HandleCreateRoom()
+    {
+        var result = await Http.PostAsJsonAsync("api/v1/room", new CreateChatRoom
+        {
+            Name = _newRoomInput
+        });
+        _newRoomInput = null;
+
+        if (RoomsComponent != null)
+            await RoomsComponent.Refresh();
+    }
+
 }
