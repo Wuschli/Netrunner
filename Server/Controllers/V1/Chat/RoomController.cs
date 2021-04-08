@@ -180,15 +180,7 @@ namespace Netrunner.Server.Controllers.V1.Chat
 
             user.Rooms.Remove(roomId);
 
-            IdentityResult result = IdentityResult.Failed();
-            for (int i = 0; i < 5; i++)
-            {
-                result = await _userManager.UpdateAsync(user);
-                if (result.Succeeded)
-                    return result;
-            }
-
-            return result;
+            return await _userManager.UpdateAsync(user);
         }
 
         private async Task<DeleteResult> DeleteRoom(string roomId)

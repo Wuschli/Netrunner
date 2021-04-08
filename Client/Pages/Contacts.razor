@@ -3,25 +3,56 @@
 @inject HttpClient Http
 
 <h3>Users</h3>
-@if (_users == null)
+@if (_contacts == null)
 {
     <Loading/>
 }
 else
 {
-    @foreach (var user in _users)
-    {
-        <User Profile="@user"></User>
-    }
+    <ul>
+        @foreach (var user in _contacts)
+        {
+            <li>
+                <User Name="@user.UserName" OnUpdate="Refresh"></User>
+            </li>
+        }
+    </ul>
+    <form @onsubmit="HandleAddContact">
+        <div class="form-group">
+            <label>
+                Name:
+                <input @bind="_newContactInput" size="50"/>
+            </label>
+        </div>
+        <button>Add Contact</button>
+    </form>
 }
 
 @code {
+#nullable enable
 
-    private IEnumerable<UserProfile>? _users;
+    private IEnumerable<Contact>? _contacts;
+    private string? _newContactInput;
 
     protected override async Task OnInitializedAsync()
     {
-        _users = await Http.GetFromJsonAsync<IEnumerable<UserProfile>>("api/v1/user");
+        await Refresh();
+    }
+
+    private async Task HandleAddContact()
+    {
+        var result = await Http.PostAsJsonAsync("api/v1/user/contacts", new Contact
+        {
+            UserName = _newContactInput
+        });
+        _newContactInput = null;
+
+        await Refresh();
+    }
+
+    private async Task Refresh()
+    {
+        _contacts = await Http.GetFromJsonAsync<IEnumerable<Contact>>("api/v1/user/contacts");
     }
 
 }

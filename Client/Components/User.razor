@@ -1,11 +1,39 @@
 ﻿@using Netrunner.Shared.User
-<p>
-    <em>@Profile?.UserName</em>
-</p>
+@inject HttpClient Http
+
+<div>
+    <p>
+        <em>@Name</em>
+    </p>
+    @if (_isContact)
+    {
+        <button @onclick="HandleRemoveContact">Remove Contact</button>
+    }
+</div>
 
 @code {
+#nullable enable
 
     [Parameter]
-    public UserProfile? Profile { get; set; }
+    public string? Name { get; set; }
+
+    [Parameter]
+    public EventCallback OnUpdate { get; set; }
+
+    private bool _isContact;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var contacts = await Http.GetFromJsonAsync<IEnumerable<Contact>>("api/v1/user/contacts");
+        _isContact = contacts?.Any(c => c.UserName.Equals(Name)) ?? false;
+    }
+
+    //TODO load profile on hover or something
+
+    private async Task HandleRemoveContact()
+    {
+        await Http.DeleteAsync($"api/v1/user/contacts/{Name}");
+        await OnUpdate.InvokeAsync();
+    }
 
 }
