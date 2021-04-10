@@ -6,9 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 using Netrunner.Server.Identity.Data;
-using Netrunner.Server.Models;
 using Netrunner.Server.Services;
 using Netrunner.Shared.User;
 
@@ -17,23 +15,28 @@ namespace Netrunner.Server.Controllers.V1.User
     [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
 
         private readonly UserManager<ApplicationUser> _userManager;
-        //private readonly IMapper _mapper;
-        //private IMongoCollection<ApplicationUser> _users;
+        private readonly IMapper _mapper;
 
-        public UserController(IUserService userService, UserManager<ApplicationUser> userManager /*, IMapper mapper, IDatabaseSettings settings*/)
+        public UsersController(IUserService userService, UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             _userService = userService;
             _userManager = userManager;
-            //_mapper = mapper;
+            _mapper = mapper;
+        }
 
-            //var mongoClient = new MongoClient(settings.ConnectionString);
-            //var database = mongoClient.GetDatabase(settings.DatabaseName);
-            //_users = database.GetCollection<ApplicationUser>(settings.UsersCollectionName);
+        [HttpGet("{userName}")]
+        public async Task<ActionResult<UserProfile>> GetUserProfile(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+                return NotFound();
+            var profile = _mapper.Map<UserProfile>(user);
+            return Ok(profile);
         }
 
         [HttpGet("contacts")]

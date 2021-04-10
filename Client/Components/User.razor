@@ -1,13 +1,25 @@
 ﻿@using Netrunner.Shared.User
+@using Netrunner.Shared.Chat
+@using MongoDB.Bson
 @inject HttpClient Http
 
 <div>
     <p>
-        <em>@Name</em>
+        <em>@Name</em>(@_profile?.Id)
     </p>
     @if (_isContact)
     {
         <button @onclick="HandleRemoveContact">Remove Contact</button>
+    }
+    @if (_rooms != null)
+    {
+        <div>
+            <h5>Invite</h5>
+            @foreach (var room in _rooms)
+            {
+                <button @onclick="() => HandleInvite(room.Id)">@room.Name</button>
+            }
+        </div>
     }
 </div>
 
@@ -20,20 +32,34 @@
     [Parameter]
     public EventCallback OnUpdate { get; set; }
 
+    private UserProfile? _profile;
     private bool _isContact;
+    private IEnumerable<ChatRoom>? _rooms;
 
     protected override async Task OnParametersSetAsync()
     {
-        var contacts = await Http.GetFromJsonAsync<IEnumerable<Contact>>("api/v1/user/contacts");
+        var contacts = await Http.GetFromJsonAsync<IEnumerable<Contact>>("api/v1/users/contacts");
         _isContact = contacts?.Any(c => c.UserName.Equals(Name)) ?? false;
+
+        _profile = await Http.GetFromJsonAsync<UserProfile>($"api/v1/users/{Name}");
+        if (_profile == null)
+            return;
+
+        var rooms = await Http.GetFromJsonAsync<IEnumerable<ChatRoom>>("api/v1/rooms");
+        _rooms = rooms?.Where(room => !room.Members.Contains(_profile.Id));
     }
 
     //TODO load profile on hover or something
 
     private async Task HandleRemoveContact()
     {
-        await Http.DeleteAsync($"api/v1/user/contacts/{Name}");
+        await Http.DeleteAsync($"api/v1/users/contacts/{Name}");
         await OnUpdate.InvokeAsync();
+    }
+
+    private async Task HandleInvite(string roomId)
+    {
+        await Http.PostAsync($"api/v1/rooms/invites/{roomId}/{Name}", null!);
     }
 
 }

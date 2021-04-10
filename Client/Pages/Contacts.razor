@@ -41,7 +41,7 @@ else
 
     private async Task HandleAddContact()
     {
-        var result = await Http.PostAsJsonAsync("api/v1/user/contacts", new Contact
+        var result = await Http.PostAsJsonAsync("api/v1/users/contacts", new Contact
         {
             UserName = _newContactInput
         });
@@ -52,7 +52,7 @@ else
 
     private async Task Refresh()
     {
-        _contacts = await Http.GetFromJsonAsync<IEnumerable<Contact>>("api/v1/user/contacts");
+        _contacts = await Http.GetFromJsonAsync<IEnumerable<Contact>>("api/v1/users/contacts");
     }
 
 }

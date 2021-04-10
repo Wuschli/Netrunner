@@ -29,8 +29,7 @@ else
 
     public async Task Refresh()
     {
-        Console.WriteLine("Refresh Chat Rooms");
-        _rooms = await Http.GetFromJsonAsync<IEnumerable<ChatRoom>>($"api/v1/room");
+        _rooms = await Http.GetFromJsonAsync<IEnumerable<ChatRoom>>($"api/v1/rooms");
     }
 
 }

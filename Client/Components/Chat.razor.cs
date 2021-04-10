@@ -52,7 +52,7 @@ namespace Netrunner.Client.Components
             if (messages != null)
                 _messages.AddRange(messages.Reverse());
 
-            _room = await Http.GetFromJsonAsync<ChatRoom>($"api/v1/room/{RoomId}");
+            _room = await Http.GetFromJsonAsync<ChatRoom>($"api/v1/rooms/{RoomId}");
         }
 
         private async Task Send()
@@ -68,7 +68,7 @@ namespace Netrunner.Client.Components
 
         private async Task LeaveRoom()
         {
-            await Http.PostAsync($"api/v1/room/leave/{RoomId}", new StringContent(string.Empty));
+            await Http.PostAsync($"api/v1/rooms/leave/{RoomId}", new StringContent(string.Empty));
             NavigationManager.NavigateTo("chat");
         }
 

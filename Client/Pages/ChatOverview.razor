@@ -9,6 +9,19 @@
 }
 else
 {
+    @if (_invites != null)
+    {
+        <h5>Invitations</h5>
+        <ul>
+            @foreach (var roomId in _invites)
+            {
+                <li>
+                    <button @onclick="() => HandleJoin(roomId)">Join @roomId</button>
+                </li>
+            }
+        </ul>
+    }
+
     <Rooms @ref="RoomsComponent"/>
 
     <form @onsubmit="HandleCreateRoom">
@@ -31,14 +44,28 @@ else
     protected Rooms? RoomsComponent;
 
     private string? _newRoomInput;
+    private IEnumerable<string>? _invites;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _invites = await Http.GetFromJsonAsync<IEnumerable<string>>("api/v1/rooms/invites");
+    }
 
     private async Task HandleCreateRoom()
     {
-        var result = await Http.PostAsJsonAsync("api/v1/room", new CreateChatRoom
+        await Http.PostAsJsonAsync("api/v1/rooms", new CreateChatRoom
         {
             Name = _newRoomInput
         });
         _newRoomInput = null;
+
+        if (RoomsComponent != null)
+            await RoomsComponent.Refresh();
+    }
+
+    private async Task HandleJoin(string roomId)
+    {
+        await Http.PostAsync($"api/v1/rooms/join/{roomId}", null!);
 
         if (RoomsComponent != null)
             await RoomsComponent.Refresh();

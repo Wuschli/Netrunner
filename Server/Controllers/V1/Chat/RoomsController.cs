@@ -17,13 +17,13 @@ namespace Netrunner.Server.Controllers.V1.Chat
     [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize]
-    public class RoomController : ControllerBase
+    public class RoomsController : ControllerBase
     {
         private readonly IMongoCollection<ChatRoom> _rooms;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserService _userService;
 
-        public RoomController(IDatabaseSettings settings, UserManager<ApplicationUser> userManager, IUserService userService)
+        public RoomsController(IDatabaseSettings settings, UserManager<ApplicationUser> userManager, IUserService userService)
         {
             _userManager = userManager;
             _userService = userService;
@@ -150,6 +150,61 @@ namespace Netrunner.Server.Controllers.V1.Chat
             return StatusCode(StatusCodes.Status500InternalServerError, "Could not remove room from user");
         }
 
+        [HttpGet("invites")]
+        public async Task<ActionResult<IEnumerable<string>>> GetInvites()
+        {
+            var user = await _userService.GetCurrentUser();
+            if (user == null)
+                return Forbid();
+            return Ok(user.Invitations);
+        }
+
+        [HttpPost("invites/{roomId}/{userName}")]
+        public async Task<ActionResult> Invite(string roomId, string userName)
+        {
+            var user = await _userService.GetCurrentUser();
+            if (user == null)
+                return Forbid();
+
+            var invited = await _userManager.FindByNameAsync(userName);
+            if (invited == null)
+                return NotFound();
+
+            var room = await _rooms.Find(r => r.Id == roomId).FirstAsync();
+            if (room == null)
+                return NotFound();
+
+            if (!room.Members.Contains(user.Id))
+                return NotFound();
+
+            if (room.Invitations?.Contains(invited.Id) == true)
+                return Ok();
+
+            var update = Builders<ChatRoom>.Update
+                .Push(r => r.Invitations, invited.Id);
+
+            var result = await _rooms.FindOneAndUpdateAsync(r => r.Id == roomId, update);
+            if (result == null)
+                return NotFound();
+
+            var identityResult = await AddInviteToUser(invited, room.Id);
+            if (identityResult.Succeeded)
+                return Ok();
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Could not add invite to user");
+        }
+
+
+        private async Task<IdentityResult> AddInviteToUser(ApplicationUser user, string roomId)
+        {
+            if (user.Invitations == null!)
+                user.Invitations = new List<string>();
+
+            user.Invitations.Add(roomId);
+
+            return await _userManager.UpdateAsync(user);
+        }
+
         private async Task<IdentityResult> AddRoomToUser(ApplicationUser user, string roomId)
         {
             if (user.Rooms == null!)
@@ -160,15 +215,7 @@ namespace Netrunner.Server.Controllers.V1.Chat
             user.Rooms.Add(roomId);
             user.Invitations.Remove(roomId);
 
-            IdentityResult result = IdentityResult.Failed();
-            for (int i = 0; i < 5; i++)
-            {
-                result = await _userManager.UpdateAsync(user);
-                if (result.Succeeded)
-                    return result;
-            }
-
-            return result;
+            return await _userManager.UpdateAsync(user);
         }
 
         private async Task<IdentityResult> RemoveRoomFromUser(ApplicationUser user, string roomId)
