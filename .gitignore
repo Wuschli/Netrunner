@@ -2,3 +2,4 @@
 bin
 obj
 mongodb_data
+mongodb_data_dev
