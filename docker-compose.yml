@@ -1,14 +1,25 @@
-version: '3'
+version: '3.4'
+
 services:
+  netrunner.server:
+    image: ${DOCKER_REGISTRY-}netrunnerserver
+    build:
+      context: .
+      dockerfile: Server/Dockerfile
+    #container_name: netrunner.server
+    ports:
+      - 80:80
+      - 443:443
+    depends_on: 
+      - mongo
+    restart: always
   mongo:
-    image: 'mongo'
-    container_name: 'mongo'
+    image: mongo
+    #container_name: mongo
     environment:
       - MONGO_INITDB_DATABASE=netrunner
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=OdyiSTATeRYe
     volumes:
       - ./mongodb_data:/data/db
-    ports:
-      - '27017-27019:27017-27019'
     restart: always

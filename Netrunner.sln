@@ -9,10 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netrunner.Client", "Client\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netrunner.Shared", "Shared\Netrunner.Shared.csproj", "{098316BC-C705-4EAF-A4BD-19AC311DB14A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9686ACD9-3229-4F9F-9B7E-8140271D776E}"
-	ProjectSection(SolutionItems) = preProject
-		docker-compose.yml = docker-compose.yml
-	EndProjectSection
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{2666EE4D-A7B5-4402-AE68-E7DEE9ED5142}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +29,10 @@ Global
 		{098316BC-C705-4EAF-A4BD-19AC311DB14A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{098316BC-C705-4EAF-A4BD-19AC311DB14A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{098316BC-C705-4EAF-A4BD-19AC311DB14A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2666EE4D-A7B5-4402-AE68-E7DEE9ED5142}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2666EE4D-A7B5-4402-AE68-E7DEE9ED5142}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2666EE4D-A7B5-4402-AE68-E7DEE9ED5142}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2666EE4D-A7B5-4402-AE68-E7DEE9ED5142}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
