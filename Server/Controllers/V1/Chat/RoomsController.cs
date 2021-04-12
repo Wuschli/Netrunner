@@ -23,7 +23,8 @@ namespace Netrunner.Server.Controllers.V1.Chat
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserService _userService;
 
-        public RoomsController(IDatabaseSettings settings, UserManager<ApplicationUser> userManager, IUserService userService)
+        public RoomsController(IDatabaseSettings settings, UserManager<ApplicationUser> userManager,
+            IUserService userService)
         {
             _userManager = userManager;
             _userService = userService;
@@ -39,8 +40,8 @@ namespace Netrunner.Server.Controllers.V1.Chat
             if (user == null)
                 return Forbid();
 
-            if (user.Rooms == null)
-                return Ok(Enumerable.Empty<ChatRoom>());
+            if (user.Rooms == null || !user.Rooms.Any())
+                return new List<ChatRoom>();
 
             var filter = Builders<ChatRoom>.Filter.In(room => room.Id, user.Rooms);
             return await _rooms.Find(filter).ToListAsync();

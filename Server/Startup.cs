@@ -191,11 +191,5 @@ namespace Netrunner.Server
                 endpoints.MapFallbackToFile("index.html");
             });
         }
-
-        private bool ValidateTokenLifetime(DateTime? notbefore, DateTime? expires, SecurityToken securitytoken,
-            TokenValidationParameters validationparameters)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
