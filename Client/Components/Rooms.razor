@@ -20,7 +20,7 @@ else
 
 @code {
 #nullable enable
-    private IEnumerable<ChatRoom>? _rooms;
+    private List<ChatRoom>? _rooms;
 
     protected override async Task OnInitializedAsync()
     {
@@ -29,7 +29,7 @@ else
 
     public async Task Refresh()
     {
-        _rooms = await Http.GetFromJsonAsync<IEnumerable<ChatRoom>>($"api/v1/rooms");
+        _rooms = await Http.GetFromJsonAsync<List<ChatRoom>>($"api/v1/rooms");
     }
 
 }
