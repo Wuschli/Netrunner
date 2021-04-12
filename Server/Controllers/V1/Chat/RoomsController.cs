@@ -157,6 +157,8 @@ namespace Netrunner.Server.Controllers.V1.Chat
             var user = await _userService.GetCurrentUser();
             if (user == null)
                 return Forbid();
+            if (user.Invitations == null || !user.Invitations.Any())
+                return Ok(new List<string>());
             return Ok(user.Invitations);
         }
 
