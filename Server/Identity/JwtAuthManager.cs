@@ -17,13 +17,14 @@ namespace Netrunner.Server.Identity
         public IImmutableDictionary<string, RefreshToken> UsersRefreshTokensReadOnlyDictionary => _usersRefreshTokens.ToImmutableDictionary();
         private readonly ConcurrentDictionary<string, RefreshToken> _usersRefreshTokens; // can store in a database or a distributed cache
         private readonly IJwtSettings _jwtSettings;
-        private readonly byte[] _secret;
+        private readonly byte[]? _secret;
 
         public JwtAuthManager(IJwtSettings jwtSettings)
         {
             _jwtSettings = jwtSettings;
             _usersRefreshTokens = new ConcurrentDictionary<string, RefreshToken>();
-            _secret = Encoding.UTF8.GetBytes(jwtSettings.Secret);
+            if (jwtSettings.Secret != null)
+                _secret = Encoding.UTF8.GetBytes(jwtSettings.Secret);
         }
 
         // optional: clean up expired refresh tokens
@@ -86,7 +87,7 @@ namespace Netrunner.Server.Identity
                 throw new SecurityTokenException("Invalid token");
             }
 
-            if (existingRefreshToken.UserName != userName || existingRefreshToken.ExpireAt < now)
+            if (userName == null || existingRefreshToken.UserName != userName || existingRefreshToken.ExpireAt < now)
             {
                 throw new SecurityTokenException("Invalid token");
             }
@@ -94,7 +95,7 @@ namespace Netrunner.Server.Identity
             return GenerateTokens(userName, principal.Claims.ToArray(), now); // need to recover the original claims
         }
 
-        public (ClaimsPrincipal, JwtSecurityToken) DecodeJwtToken(string token)
+        public (ClaimsPrincipal principal, JwtSecurityToken?) DecodeJwtToken(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
             {

@@ -92,7 +92,7 @@ namespace Netrunner.Server.Controllers.V1.Identity
             {
                 UserName = user.UserName,
                 AccessToken = jwtResult.AccessToken,
-                RefreshToken = jwtResult.RefreshToken.TokenString,
+                RefreshToken = jwtResult.RefreshToken?.TokenString,
                 Successful = true
             };
             return response;

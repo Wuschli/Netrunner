@@ -74,7 +74,8 @@ namespace Netrunner.Server
 
                     // ApplicationUser settings
                     options.User.RequireUniqueEmail = false;
-                    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@.-_";
+                    options.User.AllowedUserNameCharacters =
+                        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@.-_";
                 }
             };
 
@@ -92,17 +93,35 @@ namespace Netrunner.Server
                 {
                     options.RequireHttpsMetadata = true;
                     options.SaveToken = true;
-                    options.TokenValidationParameters = new TokenValidationParameters
+                    if (!string.IsNullOrWhiteSpace(jwtSettings.Secret))
                     {
-                        ValidateIssuer = true,
-                        ValidIssuer = jwtSettings.Issuer,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
-                        ValidateAudience = true,
-                        ValidAudience = jwtSettings.Audience,
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.FromMinutes(1),
-                    };
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = jwtSettings.Issuer,
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+                            ValidateAudience = true,
+                            ValidAudience = jwtSettings.Audience,
+                            ValidateLifetime = true,
+                            ClockSkew = TimeSpan.FromMinutes(1),
+                        };
+                    }
+                    else
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = jwtSettings.Issuer,
+                            ValidateIssuerSigningKey = false,
+                            ValidateAudience = true,
+                            ValidAudience = jwtSettings.Audience,
+                            ValidateLifetime = true,
+                            ClockSkew = TimeSpan.FromMinutes(1),
+                        };
+
+                    }
+
                     options.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context =>
@@ -173,7 +192,8 @@ namespace Netrunner.Server
             });
         }
 
-        private bool ValidateTokenLifetime(DateTime? notbefore, DateTime? expires, SecurityToken securitytoken, TokenValidationParameters validationparameters)
+        private bool ValidateTokenLifetime(DateTime? notbefore, DateTime? expires, SecurityToken securitytoken,
+            TokenValidationParameters validationparameters)
         {
             throw new NotImplementedException();
         }
