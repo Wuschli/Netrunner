@@ -3,3 +3,6 @@ bin
 obj
 mongodb_data
 mongodb_data_dev
+crossbar/node.pid
+crossbar/key.pub
+crossbar/key.priv

@@ -8,7 +8,6 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["Server/Netrunner.Server.csproj", "Server/"]
-COPY ["Client/Netrunner.Client.csproj", "Client/"]
 COPY ["Shared/Netrunner.Shared.csproj", "Shared/"]
 RUN dotnet restore "Server/Netrunner.Server.csproj"
 COPY . .

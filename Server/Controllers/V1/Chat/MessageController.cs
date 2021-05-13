@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Driver;
+using Netrunner.Server.Configs;
 using Netrunner.Server.Hubs;
-using Netrunner.Server.Models;
 using Netrunner.Shared.Chat;
 
 namespace Netrunner.Server.Controllers.V1.Chat
@@ -21,13 +21,13 @@ namespace Netrunner.Server.Controllers.V1.Chat
         private readonly IMongoCollection<ChatRoom> _rooms;
         private readonly IMongoCollection<ChatMessage> _messages;
 
-        public MessageController(IDatabaseSettings settings, IHubContext<ChatHub, IChatHub> chatHubContext)
+        public MessageController(NetrunnerConfig config, IHubContext<ChatHub, IChatHub> chatHubContext)
         {
             _chatHubContext = chatHubContext;
-            var mongoClient = new MongoClient(settings.ConnectionString);
-            var database = mongoClient.GetDatabase(settings.DatabaseName);
-            _rooms = database.GetCollection<ChatRoom>(settings.ChatRoomCollectionName);
-            _messages = database.GetCollection<ChatMessage>(settings.ChatMessageCollectionName);
+            var mongoClient = new MongoClient(config.Database.ConnectionString);
+            var database = mongoClient.GetDatabase(config.Database.DatabaseName);
+            _rooms = database.GetCollection<ChatRoom>(config.Database.ChatRoomCollectionName);
+            _messages = database.GetCollection<ChatMessage>(config.Database.ChatMessageCollectionName);
         }
 
 

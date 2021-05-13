@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Netrunner.Server.Models;
+using Netrunner.Server.Configs;
 
 namespace Netrunner.Server.Identity
 {
@@ -16,15 +16,15 @@ namespace Netrunner.Server.Identity
     {
         public IImmutableDictionary<string, RefreshToken> UsersRefreshTokensReadOnlyDictionary => _usersRefreshTokens.ToImmutableDictionary();
         private readonly ConcurrentDictionary<string, RefreshToken> _usersRefreshTokens; // can store in a database or a distributed cache
-        private readonly IJwtSettings _jwtSettings;
+        private readonly NetrunnerConfig _config;
         private readonly byte[]? _secret;
 
-        public JwtAuthManager(IJwtSettings jwtSettings)
+        public JwtAuthManager(NetrunnerConfig config)
         {
-            _jwtSettings = jwtSettings;
+            _config = config;
             _usersRefreshTokens = new ConcurrentDictionary<string, RefreshToken>();
-            if (jwtSettings.Secret != null)
-                _secret = Encoding.UTF8.GetBytes(jwtSettings.Secret);
+            if (config.Jwt.Secret != null)
+                _secret = Encoding.UTF8.GetBytes(config.Jwt.Secret);
         }
 
         // optional: clean up expired refresh tokens
@@ -51,10 +51,10 @@ namespace Netrunner.Server.Identity
         {
             var shouldAddAudienceClaim = string.IsNullOrWhiteSpace(claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Aud)?.Value);
             var jwtToken = new JwtSecurityToken(
-                _jwtSettings.Issuer,
-                shouldAddAudienceClaim ? _jwtSettings.Audience : string.Empty,
+                _config.Jwt.Issuer,
+                shouldAddAudienceClaim ? _config.Jwt.Audience : string.Empty,
                 claims,
-                expires: now.AddMinutes(_jwtSettings.AccessTokenExpiration),
+                expires: now.AddMinutes(_config.Jwt.AccessTokenExpiration),
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(_secret), SecurityAlgorithms.HmacSha256Signature));
             var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
@@ -62,7 +62,7 @@ namespace Netrunner.Server.Identity
             {
                 UserName = username,
                 TokenString = GenerateRefreshTokenString(),
-                ExpireAt = now.AddMinutes(_jwtSettings.RefreshTokenExpiration)
+                ExpireAt = now.AddMinutes(_config.Jwt.RefreshTokenExpiration)
             };
             _usersRefreshTokens.AddOrUpdate(refreshToken.TokenString, refreshToken, (_, _) => refreshToken);
 
@@ -107,10 +107,10 @@ namespace Netrunner.Server.Identity
                     new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = _jwtSettings.Issuer,
+                        ValidIssuer = _config.Jwt.Issuer,
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(_secret),
-                        ValidAudience = _jwtSettings.Audience,
+                        ValidAudience = _config.Jwt.Audience,
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.FromMinutes(1)

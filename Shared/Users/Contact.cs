@@ -1,4 +1,4 @@
-﻿namespace Netrunner.Shared.User
+﻿namespace Netrunner.Shared.Users
 {
     public class Contact
     {

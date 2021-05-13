@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using AspNetCore.Identity.MongoDbCore.Models;
 using MongoDbGenericRepository.Attributes;
-using Netrunner.Shared.User;
+using Netrunner.Shared.Users;
 
 namespace Netrunner.Server.Identity.Data
 {

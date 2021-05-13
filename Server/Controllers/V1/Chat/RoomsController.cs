@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
+using Netrunner.Server.Configs;
 using Netrunner.Server.Identity.Data;
-using Netrunner.Server.Models;
 using Netrunner.Server.Services;
 using Netrunner.Shared.Chat;
 
@@ -23,14 +23,14 @@ namespace Netrunner.Server.Controllers.V1.Chat
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserService _userService;
 
-        public RoomsController(IDatabaseSettings settings, UserManager<ApplicationUser> userManager,
+        public RoomsController(NetrunnerConfig config, UserManager<ApplicationUser> userManager,
             IUserService userService)
         {
             _userManager = userManager;
             _userService = userService;
-            var mongoClient = new MongoClient(settings.ConnectionString);
-            var database = mongoClient.GetDatabase(settings.DatabaseName);
-            _rooms = database.GetCollection<ChatRoom>(settings.ChatRoomCollectionName);
+            var mongoClient = new MongoClient(config.Database.ConnectionString);
+            var database = mongoClient.GetDatabase(config.Database.DatabaseName);
+            _rooms = database.GetCollection<ChatRoom>(config.Database.ChatRoomCollectionName);
         }
 
         [HttpGet]

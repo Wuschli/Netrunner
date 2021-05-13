@@ -14,50 +14,43 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Netrunner.Server.Configs;
 using Netrunner.Server.Hubs;
 using Netrunner.Server.Identity;
 using Netrunner.Server.Identity.Data;
 using Netrunner.Server.Mapping;
-using Netrunner.Server.Models;
 using Netrunner.Server.Services;
 
 namespace Netrunner.Server
 {
     public class Startup
     {
+        private const string ConfigName = "Netrunner";
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOptions<DatabaseSettings>()
-                .BindConfiguration(nameof(DatabaseSettings));
-            services.AddOptions<JwtSettings>()
-                .BindConfiguration(nameof(JwtSettings));
+            services.AddOptions<NetrunnerConfig>()
+                .BindConfiguration(ConfigName);
 
-            services.AddSingleton<IDatabaseSettings>(
+            services.AddSingleton(
                 sp =>
-                    sp.GetRequiredService<IOptions<DatabaseSettings>>().Value
+                    sp.GetRequiredService<IOptions<NetrunnerConfig>>().Value
             );
 
-            services.AddSingleton<IJwtSettings>(
-                sp =>
-                    sp.GetRequiredService<IOptions<JwtSettings>>().Value
-            );
-
-            var dbSettings = Configuration.GetSection(nameof(DatabaseSettings)).Get<DatabaseSettings>();
-            var jwtSettings = Configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
+            var config = Configuration.GetSection(ConfigName).Get<NetrunnerConfig>();
 
             var mongoDbIdentityConfiguration = new MongoDbIdentityConfiguration
             {
                 MongoDbSettings = new MongoDbSettings
                 {
-                    ConnectionString = dbSettings.ConnectionString,
-                    DatabaseName = dbSettings.DatabaseName
+                    ConnectionString = config.Database.ConnectionString,
+                    DatabaseName = config.Database.DatabaseName
                 },
                 IdentityOptionsAction = options =>
                 {
@@ -93,16 +86,16 @@ namespace Netrunner.Server
                 {
                     options.RequireHttpsMetadata = true;
                     options.SaveToken = true;
-                    if (!string.IsNullOrWhiteSpace(jwtSettings.Secret))
+                    if (!string.IsNullOrWhiteSpace(config.Jwt.Secret))
                     {
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateIssuer = true,
-                            ValidIssuer = jwtSettings.Issuer,
+                            ValidIssuer = config.Jwt.Issuer,
                             ValidateIssuerSigningKey = true,
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(config.Jwt.Secret)),
                             ValidateAudience = true,
-                            ValidAudience = jwtSettings.Audience,
+                            ValidAudience = config.Jwt.Audience,
                             ValidateLifetime = true,
                             ClockSkew = TimeSpan.FromMinutes(1),
                         };
@@ -112,14 +105,13 @@ namespace Netrunner.Server
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateIssuer = true,
-                            ValidIssuer = jwtSettings.Issuer,
+                            ValidIssuer = config.Jwt.Issuer,
                             ValidateIssuerSigningKey = false,
                             ValidateAudience = true,
-                            ValidAudience = jwtSettings.Audience,
+                            ValidAudience = config.Jwt.Audience,
                             ValidateLifetime = true,
                             ClockSkew = TimeSpan.FromMinutes(1),
                         };
-
                     }
 
                     options.Events = new JwtBearerEvents
@@ -156,6 +148,7 @@ namespace Netrunner.Server
 
             services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
             services.AddScoped<IUserService, UserService>();
+            services.AddHostedService<ChallengeService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -177,8 +170,8 @@ namespace Netrunner.Server
             }
 
             //app.UseHttpsRedirection();
-            app.UseBlazorFrameworkFiles();
-            app.UseStaticFiles();
+            //app.UseBlazorFrameworkFiles();
+            //app.UseStaticFiles();
 
             app.UseRouting();
             app.UseAuthentication();
@@ -188,7 +181,7 @@ namespace Netrunner.Server
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chathub");
-                endpoints.MapFallbackToFile("index.html");
+                //endpoints.MapFallbackToFile("index.html");
             });
         }
     }

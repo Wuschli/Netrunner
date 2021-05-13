@@ -8,5 +8,28 @@ services:
       dockerfile: Server/Dockerfile
     depends_on: 
       - mongo
+      - crossbar
+  netrunner.client:
+    image: ${DOCKER_REGISTRY-}netrunnerclient
+    build:
+      context: .
+      dockerfile: Client/Dockerfile
+    depends_on: 
+      - netrunner.server
+  netrunner.challenges:
+    image: ${DOCKER_REGISTRY-}netrunnerchallenges
+    build:
+      context: .
+      dockerfile: Challenges/Dockerfile
+    depends_on: 
+      - netrunner.server
+  traefik:
+    image: traefik:v2.4
+    command: --providers.docker
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+  crossbar:
+    image: crossbario/crossbar
   mongo:
     image: mongo
