@@ -27,7 +27,7 @@ namespace Netrunner.Client.Components
         protected override async Task OnInitializedAsync()
         {
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"), options => { options.AccessTokenProvider = () => AuthService.AccessToken; })
+                .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"), options => { options.AccessTokenProvider = () => _authHelper.AccessToken; })
                 .AddMessagePackProtocol()
                 .Build();
 

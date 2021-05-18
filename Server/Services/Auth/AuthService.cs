@@ -3,26 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Netrunner.Server.Configs;
 using Netrunner.Server.Identity;
 using Netrunner.Server.Identity.Data;
 using Netrunner.Shared.Identity;
+using Netrunner.Shared.Services;
 
-namespace Netrunner.Server.Controllers.V1.Identity
+namespace Netrunner.Server.Services.Auth
 {
-    [Route("api/v1/[controller]/[action]")]
-    [ApiController]
-    public class AccountController : ControllerBase
+    public class AuthService : WampServiceBase, IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IJwtAuthManager _jwtAuthManager;
         private readonly NetrunnerConfig _config;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtAuthManager jwtAuthManager, NetrunnerConfig config)
+        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtAuthManager jwtAuthManager, NetrunnerConfig config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -30,9 +27,7 @@ namespace Netrunner.Server.Controllers.V1.Identity
             _config = config;
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<ActionResult<AuthenticationResponse>> Register([FromBody] RegistrationRequest request)
+        public async Task<AuthenticationResponse> Register(RegistrationRequest request)
         {
             var user = new ApplicationUser(request.UserName);
             var result = await _userManager.CreateAsync(user, request.Password);
@@ -41,39 +36,37 @@ namespace Netrunner.Server.Controllers.V1.Identity
                 await _signInManager.SignInAsync(user, false);
                 //var token = AuthenticationHelper.GenerateJwtToken(user, _config);
                 //var response = new RegistrationResponse {UserName = user.UserName, AccessToken = token};
-                return Created("api/v1/account/register", await AuthenticateAsync(user));
+                return await AuthenticateAsync(user);
             }
 
             if (result.Errors != null)
-                return BadRequest(new AuthenticationResponse
+                return new AuthenticationResponse
                 {
                     Error = string.Join(",", result.Errors.Select(error => error.Description)),
                     Successful = false
-                });
+                };
 
-            return BadRequest(new AuthenticationResponse
+            return new AuthenticationResponse
             {
                 Error = "Error!",
                 Successful = false
-            });
+            };
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginRequest request)
+        public async Task<AuthenticationResponse> Login(LoginRequest request)
         {
             var result = await _signInManager.PasswordSignInAsync(request.UserName, request.Password, false, false);
             if (result.Succeeded)
             {
                 var user = _userManager.Users.Single(r => r.UserName == request.UserName);
-                return Ok(await AuthenticateAsync(user));
+                return await AuthenticateAsync(user);
             }
 
-            return Unauthorized(new AuthenticationResponse
+            return new AuthenticationResponse
             {
                 Error = "Bad Credentials",
                 Successful = false
-            });
+            };
         }
 
         private async Task<AuthenticationResponse> AuthenticateAsync(ApplicationUser user)

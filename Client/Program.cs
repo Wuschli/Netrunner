@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Netrunner.Client.Services;
 using Netrunner.Shared.Services;
 using WampSharp.V2;
+using IAuthService = Netrunner.Shared.Services.IAuthService;
 
 namespace Netrunner.Client
 {
@@ -22,14 +23,8 @@ namespace Netrunner.Client
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
-            builder.Services.AddScoped<IAuthService, AuthService>();
-
-            // WAMP
-            var wampChannelFactory = new DefaultWampChannelFactory();
-            var wampChannel = wampChannelFactory.CreateJsonChannel(builder.Configuration["wampAddress"], builder.Configuration["wampRealm"]);
-            await wampChannel.Open();
-
-            builder.Services.AddSingleton(wampChannel.RealmProxy.Services.GetCalleeProxy<IPingService>());
+            builder.Services.AddScoped<IAuthHelper, AuthHelper>();
+            builder.Services.AddSingleton<IServiceHelper, ServiceHelper>();
 
             await builder.Build().RunAsync();
         }

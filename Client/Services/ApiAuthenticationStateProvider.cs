@@ -31,7 +31,7 @@ namespace Netrunner.Client.Services
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var savedToken = await _localStorage.GetItemAsync<string>(AuthService.AuthTokenStorageKey);
+            var savedToken = await _localStorage.GetItemAsync<string>(AuthHelper.AuthTokenStorageKey);
 
             if (string.IsNullOrWhiteSpace(savedToken))
                 return AnonymousState;

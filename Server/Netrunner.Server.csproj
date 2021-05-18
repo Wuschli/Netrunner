@@ -35,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\V1\Challenges\" />
     <Folder Include="Controllers\V1\Resources\" />
     <Folder Include="Hubs\" />
   </ItemGroup>

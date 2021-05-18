@@ -1,6 +1,6 @@
 ﻿@using Netrunner.Client.Services
 @inject NavigationManager NavigationManager
-@inject IAuthService AuthService
+@inject IAuthHelper _authHelper
 @inject HttpClient Http
 
 @if (!string.IsNullOrWhiteSpace(RoomId))

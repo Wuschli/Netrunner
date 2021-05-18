@@ -1,14 +1,13 @@
-﻿using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Netrunner.Shared.Identity;
+using Netrunner.Shared.Services;
 
 namespace Netrunner.Client.Services
 {
-    public interface IAuthService
+    public interface IAuthHelper
     {
         Task<string> AccessToken { get; }
         Task<AuthenticationResponse?> Login(string? userName, string? password);
@@ -16,21 +15,20 @@ namespace Netrunner.Client.Services
         Task<AuthenticationResponse?> Register(string? userName, string? password);
     }
 
-    public class AuthService : IAuthService
+    public class AuthHelper : IAuthHelper
     {
         public const string AuthTokenStorageKey = "authToken";
-        private readonly HttpClient _httpClient;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly ILocalStorageService _localStorage;
+        private readonly IServiceHelper _serviceHelper;
         public Task<string> AccessToken => _localStorage.GetItemAsync<string>(AuthTokenStorageKey).AsTask();
 
 
-        public AuthService(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider,
-            ILocalStorageService localStorage)
+        public AuthHelper(AuthenticationStateProvider authenticationStateProvider, ILocalStorageService localStorage, IServiceHelper serviceHelper)
         {
-            _httpClient = httpClient;
             _authenticationStateProvider = authenticationStateProvider;
             _localStorage = localStorage;
+            _serviceHelper = serviceHelper;
         }
 
         public async Task<AuthenticationResponse?> Register(string? userName, string? password)
@@ -40,14 +38,14 @@ namespace Netrunner.Client.Services
                 UserName = userName,
                 Password = password
             };
-            var response = await _httpClient.PostAsJsonAsync("api/v1/account/register", model);
-            var result = await response.Content.ReadFromJsonAsync<AuthenticationResponse>();
+            var authService = await _serviceHelper.GetService<IAuthService>();
+            var response = await authService.Register(model);
 
-            if (!response.IsSuccessStatusCode)
-                return result;
+            if (!response.Successful)
+                return response;
 
-            await Authenticate(result);
-            return result;
+            await Authenticate(response);
+            return response;
         }
 
         public async Task<AuthenticationResponse?> Login(string? userName, string? password)
@@ -57,22 +55,22 @@ namespace Netrunner.Client.Services
                 UserName = userName,
                 Password = password
             };
-            var response = await _httpClient.PostAsJsonAsync("api/v1/account/Login", model);
-            var result = await response.Content.ReadFromJsonAsync<AuthenticationResponse>();
+            var authService = await _serviceHelper.GetService<IAuthService>();
+            var response = await authService.Login(model);
 
-            if (!response.IsSuccessStatusCode)
-                return result;
+            if (!response.Successful)
+                return response;
 
-            await Authenticate(result);
+            await Authenticate(response);
 
-            return result;
+            return response;
         }
 
         public async Task Logout()
         {
             await _localStorage.RemoveItemAsync(AuthTokenStorageKey);
             ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsLoggedOut();
-            _httpClient.DefaultRequestHeaders.Authorization = null;
+            await _serviceHelper.SetAuthToken(null, null);
         }
 
         private async Task Authenticate(AuthenticationResponse? authentication)
@@ -82,8 +80,7 @@ namespace Netrunner.Client.Services
             await _localStorage.SetItemAsync(AuthTokenStorageKey, authentication.AccessToken);
             ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsAuthenticated(authentication
                 .UserName);
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("bearer", authentication.AccessToken);
+            await _serviceHelper.SetAuthToken(authentication.UserName, authentication.AccessToken);
         }
     }
 }
