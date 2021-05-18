@@ -26,6 +26,7 @@ namespace Netrunner.Server
     public class Startup
     {
         private const string ConfigName = "Netrunner";
+        private const string CorsPolicy = "DefaultCorsPolicy";
         public IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration)
@@ -137,6 +138,14 @@ namespace Netrunner.Server
             services.AddSignalR()
                 .AddMessagePackProtocol();
 
+            services.AddCors(o => o.AddDefaultPolicy(builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            }));
+
             services.AddControllers();
             services.AddResponseCompression(opts =>
             {
@@ -169,9 +178,7 @@ namespace Netrunner.Server
                 app.UseHsts();
             }
 
-            //app.UseHttpsRedirection();
-            //app.UseBlazorFrameworkFiles();
-            //app.UseStaticFiles();
+            app.UseCors();
 
             app.UseRouting();
             app.UseAuthentication();
@@ -181,7 +188,6 @@ namespace Netrunner.Server
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chathub");
-                //endpoints.MapFallbackToFile("index.html");
             });
         }
     }

@@ -13,14 +13,14 @@ services:
     image: ${DOCKER_REGISTRY-}netrunnerclient
     build:
       context: .
-      dockerfile: Client/Dockerfile
+      dockerfile: Client.dockerfile
     depends_on: 
       - netrunner.server
   netrunner.challenges:
     image: ${DOCKER_REGISTRY-}netrunnerchallenges
     build:
       context: .
-      dockerfile: Challenges/Dockerfile
+      dockerfile: Challenges.dockerfile
     depends_on: 
       - netrunner.server
   traefik:
