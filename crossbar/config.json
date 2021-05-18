@@ -12,8 +12,73 @@
               "name": "anonymous",
               "permissions": [
                 {
-                  "uri": "",
-                  "match": "prefix",
+                  "uri": "*",
+                  "allow": {
+                    "call": false,
+                    "register": false,
+                    "publish": false,
+                    "subscribe": false
+                  },
+                  "disclose": {
+                    "caller": false,
+                    "publisher": false
+                  },
+                  "cache": true
+                },
+                {
+                  "uri": "netrunner.login.*",
+                  "allow": {
+                    "call": true,
+                    "register": false,
+                    "publish": false,
+                    "subscribe": false
+                  },
+                  "disclose": {
+                    "caller": false,
+                    "publisher": false
+                  },
+                  "cache": true
+                },
+                {
+                  "uri": "netrunner.ping",
+                  "allow": {
+                    "call": true,
+                    "register": false,
+                    "publish": false,
+                    "subscribe": false
+                  },
+                  "disclose": {
+                    "caller": false,
+                    "publisher": false
+                  },
+                  "cache": true
+                }
+              ]
+            },
+            {
+              "name": "public",
+              "permissions": [
+                {
+                  "uri": "*",
+                  "allow": {
+                    "call": true,
+                    "register": false,
+                    "publish": false,
+                    "subscribe": true
+                  },
+                  "disclose": {
+                    "caller": false,
+                    "publisher": false
+                  },
+                  "cache": true
+                }
+              ]
+            },
+            {
+              "name": "internal",
+              "permissions": [
+                {
+                  "uri": "*",
                   "allow": {
                     "call": true,
                     "register": true,
@@ -21,8 +86,8 @@
                     "subscribe": true
                   },
                   "disclose": {
-                    "caller": false,
-                    "publisher": false
+                    "caller": true,
+                    "publisher": true
                   },
                   "cache": true
                 }
@@ -43,7 +108,22 @@
               "type": "nodeinfo"
             },
             "ws": {
-              "type": "websocket"
+              "type": "websocket",
+              "auth": {
+                "ticket": {
+                  "type": "static",
+                  "principals": {
+                    "internal": {
+                      "ticket": "${WAMP_INTERNAL_TICKET}",
+                      "role": "internal"
+                    }
+                  }
+                },
+                "anonymous": {
+                  "type": "static",
+                  "role": "anonymous"
+                }
+              }
             }
           }
         }

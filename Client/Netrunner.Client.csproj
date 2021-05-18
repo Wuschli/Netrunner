@@ -20,6 +20,7 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="5.0.5" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.10.0" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
+    <PackageReference Include="WampSharp.Default.Client" Version="20.1.1" />
   </ItemGroup>
 
   <ItemGroup>

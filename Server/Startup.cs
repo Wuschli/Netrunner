@@ -158,6 +158,7 @@ namespace Netrunner.Server
             services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
             services.AddScoped<IUserService, UserService>();
             services.AddHostedService<ChallengeService>();
+            services.AddHostedService<PingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

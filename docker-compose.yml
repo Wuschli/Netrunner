@@ -9,6 +9,8 @@ services:
     depends_on: 
       - mongo
       - crossbar
+    environment:
+      - NETRUNNER_BASE_URL
   netrunner.client:
     image: ${DOCKER_REGISTRY-}netrunnerclient
     build:
@@ -16,6 +18,9 @@ services:
       dockerfile: Client.dockerfile
     depends_on: 
       - netrunner.server
+    environment:
+      - NETRUNNER_BASE_URL
+      - WAMP_INTERNAL_TICKET
   netrunner.challenges:
     image: ${DOCKER_REGISTRY-}netrunnerchallenges
     build:
@@ -23,6 +28,8 @@ services:
       dockerfile: Challenges.dockerfile
     depends_on: 
       - netrunner.server
+    environment:
+      - NETRUNNER_BASE_URL
   traefik:
     image: traefik:v2.4
     command: --providers.docker
@@ -31,5 +38,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
   crossbar:
     image: crossbario/crossbar
+    environment: 
+      - WAMP_INTERNAL_TICKET
   mongo:
     image: mongo

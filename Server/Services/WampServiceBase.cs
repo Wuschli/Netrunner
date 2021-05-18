@@ -16,7 +16,7 @@ namespace Netrunner.Server.Services
         public virtual async Task StartAsync(CancellationToken cancellationToken)
         {
             var channelFactory = new DefaultWampChannelFactory();
-            var channel = channelFactory.CreateMsgpackChannel(location, realmName);
+            var channel = channelFactory.CreateMsgpackChannel(location, realmName, new WampTicketAuthenticator());
             await channel.Open().ConfigureAwait(false);
             var realm = channel.RealmProxy;
             _registration = await realm.Services.RegisterCallee(this);

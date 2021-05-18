@@ -1,6 +1,9 @@
 ﻿@using Netrunner.Client.Services
-@inject IAuthService AuthService
-@inject NavigationManager NavigationManager
+@using Microsoft.Extensions.Configuration
+@using Netrunner.Shared.Services
+@inject IAuthService _authService
+@inject NavigationManager _navigationManager
+@inject IPingService _pingService
 
 <h3>Login</h3>
 
