@@ -20,6 +20,8 @@ using Netrunner.Server.Identity;
 using Netrunner.Server.Identity.Data;
 using Netrunner.Server.Mapping;
 using Netrunner.Server.Services;
+using Netrunner.Server.Services.Auth;
+using Netrunner.Shared.Services;
 
 namespace Netrunner.Server
 {
@@ -156,9 +158,11 @@ namespace Netrunner.Server
             services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfile>(); });
 
             services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddHostedService<ChallengeService>();
-            services.AddHostedService<PingService>();
+            services.AddScoped<IUserManager, UserManager>();
+
+            services.AddWampService<IChallengeService, ChallengeService>();
+            services.AddWampService<IPingService, PingService>();
+            services.AddWampService<IAuthService, AuthService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

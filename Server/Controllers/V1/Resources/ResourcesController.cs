@@ -17,11 +17,11 @@ namespace Netrunner.Server.Controllers.V1.Resources
     public class ResourcesController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUserService _userService;
+        private readonly IUserManager _userService;
         private readonly IMongoCollection<Resource> _resources;
 
 
-        public ResourcesController(NetrunnerConfig config, UserManager<ApplicationUser> userManager, IUserService userService)
+        public ResourcesController(NetrunnerConfig config, UserManager<ApplicationUser> userManager, IUserManager userService)
         {
             _userManager = userManager;
             _userService = userService;

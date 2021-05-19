@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Netrunner.Server.Configs;
 using Netrunner.Server.Identity;
 using Netrunner.Server.Identity.Data;
@@ -12,19 +12,19 @@ using Netrunner.Shared.Services;
 
 namespace Netrunner.Server.Services.Auth
 {
-    public class AuthService : WampServiceBase, IAuthService
+    public class AuthService : IAuthService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IUserManager _userManager;
         private readonly IJwtAuthManager _jwtAuthManager;
         private readonly NetrunnerConfig _config;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtAuthManager jwtAuthManager, NetrunnerConfig config)
+        public AuthService(IUserManager userManager, IJwtAuthManager jwtAuthManager, NetrunnerConfig config, ILogger<AuthService> logger)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
             _jwtAuthManager = jwtAuthManager;
             _config = config;
+            _logger = logger;
         }
 
         public async Task<AuthenticationResponse> Register(RegistrationRequest request)
@@ -33,7 +33,7 @@ namespace Netrunner.Server.Services.Auth
             var result = await _userManager.CreateAsync(user, request.Password);
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, false);
+                await _userManager.SignInAsync(user, false);
                 //var token = AuthenticationHelper.GenerateJwtToken(user, _config);
                 //var response = new RegistrationResponse {UserName = user.UserName, AccessToken = token};
                 return await AuthenticateAsync(user);
@@ -55,7 +55,7 @@ namespace Netrunner.Server.Services.Auth
 
         public async Task<AuthenticationResponse> Login(LoginRequest request)
         {
-            var result = await _signInManager.PasswordSignInAsync(request.UserName, request.Password, false, false);
+            var result = await _userManager.PasswordSignInAsync(request.UserName, request.Password, false, false);
             if (result.Succeeded)
             {
                 var user = _userManager.Users.Single(r => r.UserName == request.UserName);

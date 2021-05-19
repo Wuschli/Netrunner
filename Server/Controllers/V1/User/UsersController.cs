@@ -17,12 +17,12 @@ namespace Netrunner.Server.Controllers.V1.User
     [Authorize]
     public class UsersController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IUserManager _userService;
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
 
-        public UsersController(IUserService userService, UserManager<ApplicationUser> userManager, IMapper mapper)
+        public UsersController(IUserManager userService, UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             _userService = userService;
             _userManager = userManager;

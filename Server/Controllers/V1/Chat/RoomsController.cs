@@ -21,10 +21,10 @@ namespace Netrunner.Server.Controllers.V1.Chat
     {
         private readonly IMongoCollection<ChatRoom> _rooms;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUserService _userService;
+        private readonly IUserManager _userService;
 
         public RoomsController(NetrunnerConfig config, UserManager<ApplicationUser> userManager,
-            IUserService userService)
+            IUserManager userService)
         {
             _userManager = userManager;
             _userService = userService;
