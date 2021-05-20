@@ -1,7 +1,7 @@
 ﻿@using Netrunner.Client.Services
 @inject NavigationManager NavigationManager
 @inject IAuthHelper _authHelper
-@inject HttpClient Http
+@inject IServiceHelper _serviceHelper
 
 @if (!string.IsNullOrWhiteSpace(RoomId))
 {
@@ -11,7 +11,7 @@
         <div class="form-group">
             <label>
                 Message:
-                <input @bind="_messageInput" size="50"/>
+                <input @bind="_messageInput" size="50" />
             </label>
         </div>
         <button disabled="@(!IsConnected)">Send</button>

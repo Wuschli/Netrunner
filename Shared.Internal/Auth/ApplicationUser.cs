@@ -11,9 +11,10 @@ namespace Netrunner.Shared.Internal.Auth
         public string Id { get; set; }
 
         public string Username { get; set; }
-        public List<string> Roles { get; set; } = new();
+        public string NormalizedUsername { get; set; }
         public string PasswordHash { get; set; }
         public string Salt { get; set; }
+        public List<string> Roles { get; set; } = new();
 
         public ApplicationUser()
         {
@@ -22,6 +23,7 @@ namespace Netrunner.Shared.Internal.Auth
         public ApplicationUser(string username)
         {
             Username = username;
+            NormalizedUsername = username.ToUpperInvariant();
         }
     }
 }

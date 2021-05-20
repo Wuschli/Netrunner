@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Netrunner.Shared.Chat;
 using System.Net.Http.Json;
+using Netrunner.Shared.Services;
 
 namespace Netrunner.Client.Components
 {
@@ -23,7 +24,7 @@ namespace Netrunner.Client.Components
 
         //protected override async Task OnInitializedAsync()
         //{
-        //TODO connect to wamp
+        //TODO connect to wamp and subscribe
         //    _hubConnection = new HubConnectionBuilder()
         //        .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"), options => { options.AccessTokenProvider = () => _authHelper.AccessToken; })
         //        .AddMessagePackProtocol()
@@ -46,16 +47,18 @@ namespace Netrunner.Client.Components
 
             if (string.IsNullOrWhiteSpace(RoomId))
                 return;
-            var messages = await Http.GetFromJsonAsync<IEnumerable<ChatMessage>>($"api/v1/message/{RoomId}");
+            var chatService = await _serviceHelper.GetService<IChatService>();
+            var messages = await chatService.GetMessages(RoomId);
             if (messages != null)
                 _messages.AddRange(messages.Reverse());
 
-            _room = await Http.GetFromJsonAsync<ChatRoom>($"api/v1/rooms/{RoomId}");
+            _room = await chatService.GetRoomDetails(RoomId);
         }
 
         private async Task Send()
         {
-            await Http.PostAsJsonAsync("api/v1/message", new ChatMessage
+            var chatService = await _serviceHelper.GetService<IChatService>();
+            await chatService.SendMessage(new ChatMessage
             {
                 Message = _messageInput,
                 RoomId = RoomId
@@ -63,17 +66,11 @@ namespace Netrunner.Client.Components
             _messageInput = string.Empty;
         }
 
-
         private async Task LeaveRoom()
         {
-            await Http.PostAsync($"api/v1/rooms/leave/{RoomId}", new StringContent(string.Empty));
+            var chatService = await _serviceHelper.GetService<IChatService>();
+            await chatService.LeaveRoom(RoomId);
             NavigationManager.NavigateTo("chat");
         }
-
-        //public async ValueTask DisposeAsync()
-        //{
-        //    if (_hubConnection != null)
-        //        await _hubConnection.DisposeAsync();
-        //}
     }
 }

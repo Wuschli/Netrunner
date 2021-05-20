@@ -44,6 +44,7 @@ namespace Netrunner.Client.Services
 
         public async Task SetAuthToken(string? username, string? token)
         {
+            Console.WriteLine($"Set new auth: {username}, {token}");
             _proxyCache.Clear();
             if (_channel != null)
                 await _channel.Close("Auth Reconnect", new GoodbyeDetails {Message = "Auth Reconnect"});

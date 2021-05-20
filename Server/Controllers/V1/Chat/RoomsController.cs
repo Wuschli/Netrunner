@@ -69,7 +69,7 @@ namespace Netrunner.Server.Controllers.V1.Chat
             var identityResult = await AddRoomToUser(user, dbRoom.Id);
             throw new NotImplementedException();
             //if (identityResult.Succeeded)
-            //    return CreatedAtAction(nameof(GetRoom), new {id = dbRoom.Id}, dbRoom);
+            //    return CreatedAtAction(nameof(GetRoomDetails), new {id = dbRoom.Id}, dbRoom);
             //return StatusCode(StatusCodes.Status500InternalServerError, "Could not add room to user");
         }
 
