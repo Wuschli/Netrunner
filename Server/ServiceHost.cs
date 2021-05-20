@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using Netrunner.Server.Attributes;
 using Netrunner.Server.Services;
 using WampSharp.V2;
-using IContainer = Autofac.IContainer;
 
 namespace Netrunner.Server
 {
@@ -17,7 +17,7 @@ namespace Netrunner.Server
         private readonly List<object> _hostedServices = new();
         private readonly List<Task> _tasks = new();
 
-        public void Run(IContainer container)
+        public void Run(ILifetimeScope container)
         {
             var cts = new CancellationTokenSource();
             _tasks.Add(RunWampServices(container, cts.Token));
@@ -25,7 +25,7 @@ namespace Netrunner.Server
             Task.WaitAll(_tasks.ToArray(), cts.Token);
         }
 
-        private async Task RunWampServices(IContainer container, CancellationToken cancellationToken)
+        private async Task RunWampServices(ILifetimeScope container, CancellationToken cancellationToken)
         {
             var channelFactory = new DefaultWampChannelFactory();
             var channel = channelFactory.CreateMsgpackChannel(location, realmName, new WampTicketAuthenticator());

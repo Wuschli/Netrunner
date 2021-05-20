@@ -2,6 +2,7 @@
 using System.Reflection;
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Netrunner.Server.Attributes;
 using Netrunner.Server.Configs;
 
 namespace Netrunner.Server
@@ -35,10 +36,5 @@ namespace Netrunner.Server
             var serviceHost = new ServiceHost();
             serviceHost.Run(container);
         }
-    }
-
-    [AttributeUsage(AttributeTargets.Class)]
-    public class WampServiceAttribute : Attribute
-    {
     }
 }

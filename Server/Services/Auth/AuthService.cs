@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Netrunner.Server.Attributes;
 using Netrunner.Server.Identity;
 using Netrunner.Server.Identity.Data;
 using Netrunner.Shared.Identity;
