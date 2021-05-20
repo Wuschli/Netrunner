@@ -23,7 +23,7 @@ namespace Netrunner.Server.Hubs
             var userName = Context.User?.Identity?.Name;
             if (userName != null)
             {
-                var user = _userManager.Users.Single(r => r.UserName == userName);
+                var user = _userManager.Users.Single(r => r.Username == userName);
                 if (user?.Rooms != null)
                 {
                     foreach (var roomId in user.Rooms)

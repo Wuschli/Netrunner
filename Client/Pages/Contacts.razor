@@ -13,7 +13,7 @@ else
         @foreach (var user in _contacts)
         {
             <li>
-                <User Name="@user.UserName" OnUpdate="Refresh"></User>
+                <User Name="@user.Username" OnUpdate="Refresh"></User>
             </li>
         }
     </ul>
@@ -43,7 +43,7 @@ else
     {
         var result = await Http.PostAsJsonAsync("api/v1/users/contacts", new Contact
         {
-            UserName = _newContactInput
+            Username = _newContactInput
         });
         _newContactInput = null;
 

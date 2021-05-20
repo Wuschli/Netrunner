@@ -5,6 +5,7 @@ using Netrunner.Shared.Services;
 
 namespace Netrunner.Server.Services
 {
+    [WampService]
     public class PingService : IPingService
     {
         private readonly ILogger<PingService> _logger;

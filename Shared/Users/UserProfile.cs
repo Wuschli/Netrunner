@@ -4,7 +4,7 @@ namespace Netrunner.Shared.Users
 {
     public class UserProfile
     {
-        public string UserName { get; set; }
-        public Guid Id { get; set; }
+        public string Username { get; set; }
+        public string Id { get; set; }
     }
 }

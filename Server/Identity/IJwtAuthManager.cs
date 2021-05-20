@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace Netrunner.Server.Identity
@@ -13,6 +12,6 @@ namespace Netrunner.Server.Identity
         JwtAuthResult Refresh(string refreshToken, string accessToken, DateTime now);
         void RemoveExpiredRefreshTokens(DateTime now);
         void RemoveRefreshTokenByUserName(string userName);
-        (ClaimsPrincipal principal, JwtSecurityToken?) DecodeJwtToken(string token);
+        //(ClaimsPrincipal principal, JwtSecurityToken?) DecodeJwtToken(string token);
     }
 }

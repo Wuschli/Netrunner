@@ -22,7 +22,7 @@
     <ul id="messagesList">
         @foreach (var message in _messages)
         {
-            <li>@message.Timestamp: @message.Sender: @message.Message</li>
+            <li>@message.Timestamp: @message.SenderId: @message.Message</li>
         }
     </ul>
 }

@@ -39,7 +39,7 @@
     protected override async Task OnParametersSetAsync()
     {
         var contacts = await Http.GetFromJsonAsync<IEnumerable<Contact>>("api/v1/users/contacts");
-        _isContact = contacts?.Any(c => c.UserName.Equals(Name)) ?? false;
+        _isContact = contacts?.Any(c => c.Username.Equals(Name)) ?? false;
 
         _profile = await Http.GetFromJsonAsync<UserProfile>($"api/v1/users/{Name}");
         if (_profile == null)

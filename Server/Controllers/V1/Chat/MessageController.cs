@@ -56,13 +56,13 @@ namespace Netrunner.Server.Controllers.V1.Chat
             if (room == null)
                 return NotFound("Room not found");
 
-            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdString, out var userId) || room.Members == null || !room.Members.Contains(userId))
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (room.Members == null || !room.Members.Contains(userId))
                 return Forbid();
 
             var dbMessage = new ChatMessage
             {
-                Sender = userId,
+                SenderId = userId,
                 Timestamp = DateTime.Now,
                 Message = message.Message,
                 RoomId = message.RoomId

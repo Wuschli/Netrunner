@@ -12,7 +12,7 @@ namespace Netrunner.Shared.Chat
         public string Id { get; set; }
 
         public string Name { get; set; }
-        public ICollection<Guid> Members { get; set; }
-        public ICollection<Guid> Invitations { get; set; }
+        public ICollection<string> Members { get; set; }
+        public ICollection<string> Invitations { get; set; }
     }
 }

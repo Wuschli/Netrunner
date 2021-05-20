@@ -12,18 +12,17 @@ using Netrunner.Shared.Services;
 
 namespace Netrunner.Server.Services.Auth
 {
+    [WampService]
     public class AuthService : IAuthService
     {
         private readonly IUserManager _userManager;
         private readonly IJwtAuthManager _jwtAuthManager;
-        private readonly NetrunnerConfig _config;
         private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IUserManager userManager, IJwtAuthManager jwtAuthManager, NetrunnerConfig config, ILogger<AuthService> logger)
+        public AuthService(IUserManager userManager, IJwtAuthManager jwtAuthManager, ILogger<AuthService> logger)
         {
             _userManager = userManager;
             _jwtAuthManager = jwtAuthManager;
-            _config = config;
             _logger = logger;
         }
 
@@ -34,8 +33,6 @@ namespace Netrunner.Server.Services.Auth
             if (result.Succeeded)
             {
                 await _userManager.SignInAsync(user, false);
-                //var token = AuthenticationHelper.GenerateJwtToken(user, _config);
-                //var response = new RegistrationResponse {UserName = user.UserName, AccessToken = token};
                 return await AuthenticateAsync(user);
             }
 
@@ -58,7 +55,7 @@ namespace Netrunner.Server.Services.Auth
             var result = await _userManager.PasswordSignInAsync(request.UserName, request.Password, false, false);
             if (result.Succeeded)
             {
-                var user = _userManager.Users.Single(r => r.UserName == request.UserName);
+                var user = _userManager.Users.Single(r => r.Username == request.UserName);
                 return await AuthenticateAsync(user);
             }
 
@@ -74,16 +71,16 @@ namespace Netrunner.Server.Services.Auth
             var roles = await _userManager.GetRolesAsync(user);
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            var jwtResult = _jwtAuthManager.GenerateTokens(user.UserName, claims, DateTime.UtcNow);
+            var jwtResult = _jwtAuthManager.GenerateTokens(user.Username, claims, DateTime.UtcNow);
 
             var response = new AuthenticationResponse
             {
-                UserName = user.UserName,
+                UserName = user.Username,
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken?.TokenString,
                 Successful = true

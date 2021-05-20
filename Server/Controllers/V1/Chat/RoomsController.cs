@@ -70,8 +70,8 @@ namespace Netrunner.Server.Controllers.V1.Chat
             var dbRoom = new ChatRoom
             {
                 Name = room.Name,
-                Invitations = new List<Guid>(),
-                Members = new List<Guid> {user.Id}
+                Invitations = new List<string>(),
+                Members = new List<string> {user.Id}
             };
             await _rooms.InsertOneAsync(dbRoom);
 

@@ -55,16 +55,16 @@ namespace Netrunner.Server.Controllers.V1.User
             if (user == null)
                 return Forbid();
 
-            if (string.IsNullOrWhiteSpace(contact.UserName))
+            if (string.IsNullOrWhiteSpace(contact.Username))
                 return NotFound();
 
-            if (user.UserName.Equals(contact.UserName))
+            if (user.Username.Equals(contact.Username))
                 return Conflict("Cannot add self as contact");
 
-            if (user.Contacts != null && user.Contacts.Any(c => c.UserName.Equals(contact.UserName)))
+            if (user.Contacts != null && user.Contacts.Any(c => c.Username.Equals(contact.Username)))
                 return Conflict("Contact already added");
 
-            var other = await _userManager.FindByNameAsync(contact.UserName);
+            var other = await _userManager.FindByNameAsync(contact.Username);
             if (other == null)
                 return NotFound();
 
@@ -88,7 +88,7 @@ namespace Netrunner.Server.Controllers.V1.User
             if (string.IsNullOrWhiteSpace(userName) || user.Contacts == null)
                 return NotFound();
 
-            var removed = user.Contacts.RemoveAll(c => c.UserName.Equals(userName));
+            var removed = user.Contacts.RemoveAll(c => c.Username.Equals(userName));
 
             if (removed == 0)
                 return NotFound();

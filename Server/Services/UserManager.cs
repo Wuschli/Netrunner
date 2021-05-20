@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -9,47 +10,52 @@ namespace Netrunner.Server.Services
 {
     public class UserManager : IUserManager
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        //private readonly IHttpContextAccessor _httpContextAccessor;
+        //private readonly UserManager<ApplicationUser> _userManager;
+        //private readonly SignInManager<ApplicationUser> _signInManager;
 
-        private HttpContext? Context => _httpContextAccessor.HttpContext;
-        public IQueryable<ApplicationUser> Users => _userManager.Users;
+        //private HttpContext? Context => _httpContextAccessor.HttpContext;
+        public IQueryable<ApplicationUser> Users => throw new NotImplementedException(); //_userManager.Users;
 
-        public UserManager(/*IHttpContextAccessor httpContextAccessor,*/ UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public UserManager( /*IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager*/)
         {
             //_httpContextAccessor = httpContextAccessor;
-            _userManager = userManager;
-            _signInManager = signInManager;
+            //_userManager = userManager;
+            //_signInManager = signInManager;
         }
 
         public async Task<ApplicationUser?> GetCurrentUser()
         {
-            if (Context?.User == null)
-                return null;
+            throw new NotImplementedException();
+            //if (Context?.User == null)
+            //    return null;
 
-            var user = await _userManager.GetUserAsync(Context.User);
-            return user;
+            //var user = await _userManager.GetUserAsync(Context.User);
+            //return user;
         }
 
         public Task<IdentityResult> CreateAsync(ApplicationUser user, string password)
         {
-            return _userManager.CreateAsync(user, password);
+            throw new NotImplementedException();
+            //return _userManager.CreateAsync(user, password);
         }
 
         public Task<IList<string>> GetRolesAsync(ApplicationUser user)
         {
-            return _userManager.GetRolesAsync(user);
+            throw new NotImplementedException();
+            //return _userManager.GetRolesAsync(user);
         }
 
         public Task SignInAsync(ApplicationUser user, bool isPersistent, string? authenticationMethod = null)
         {
-            return _signInManager.SignInAsync(user, isPersistent, authenticationMethod);
+            throw new NotImplementedException();
+            //return _signInManager.SignInAsync(user, isPersistent, authenticationMethod);
         }
 
         public Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
         {
-            return _signInManager.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure);
+            throw new NotImplementedException();
+            //return _signInManager.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure);
         }
     }
 
