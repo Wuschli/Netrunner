@@ -13,6 +13,10 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netrunner.Challenges", "Challenges\Netrunner.Challenges.csproj", "{780A921A-E076-43C5-BB84-82E7D9D17DD6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netrunner.Auth", "Auth\Netrunner.Auth.csproj", "{82F1DD88-1D37-4516-A7FC-E9A20090E0FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Netrunner.Shared.Internal", "Shared.Internal\Netrunner.Shared.Internal.csproj", "{50B85BED-2E6F-4CC1-86AE-7E3E32D6A844}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{780A921A-E076-43C5-BB84-82E7D9D17DD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{780A921A-E076-43C5-BB84-82E7D9D17DD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{780A921A-E076-43C5-BB84-82E7D9D17DD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82F1DD88-1D37-4516-A7FC-E9A20090E0FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82F1DD88-1D37-4516-A7FC-E9A20090E0FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82F1DD88-1D37-4516-A7FC-E9A20090E0FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82F1DD88-1D37-4516-A7FC-E9A20090E0FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50B85BED-2E6F-4CC1-86AE-7E3E32D6A844}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50B85BED-2E6F-4CC1-86AE-7E3E32D6A844}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50B85BED-2E6F-4CC1-86AE-7E3E32D6A844}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50B85BED-2E6F-4CC1-86AE-7E3E32D6A844}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

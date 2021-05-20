@@ -111,6 +111,19 @@
               "type": "websocket",
               "auth": {
                 "ticket": {
+                  "type": "dynamic",
+                  "authenticator": "netrunner.auth.authenticate"
+                },
+                "anonymous": {
+                  "type": "static",
+                  "role": "anonymous"
+                }
+              }
+            },
+            "internal": {
+              "type": "websocket",
+              "auth": {
+                "ticket": {
                   "type": "static",
                   "principals": {
                     "internal": {
@@ -118,10 +131,6 @@
                       "role": "internal"
                     }
                   }
-                },
-                "anonymous": {
-                  "type": "static",
-                  "role": "anonymous"
                 }
               }
             }

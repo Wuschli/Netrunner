@@ -1,8 +1,7 @@
-﻿using System.Net.Http.Headers;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
-using Netrunner.Shared.Identity;
+using Netrunner.Shared.Auth;
 using Netrunner.Shared.Services;
 
 namespace Netrunner.Client.Services

@@ -3,9 +3,9 @@ using WampSharp.V2.Authentication;
 using WampSharp.V2.Client;
 using WampSharp.V2.Core.Contracts;
 
-namespace Netrunner.Server.Services
+namespace Netrunner.Shared.Internal
 {
-    public class WampTicketAuthenticator : IWampClientAuthenticator
+    public class WampInternalTicketAuthenticator : IWampClientAuthenticator
     {
         private static readonly string[] _authenticationMethods = {"ticket"};
         private const string _authenticationId = "internal";

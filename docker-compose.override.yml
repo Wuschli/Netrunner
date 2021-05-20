@@ -35,3 +35,5 @@ services:
       - ./mongodb_data_dev:/data/db
     ports:
       - "27017:27017"
+  netrunner.auth:
+

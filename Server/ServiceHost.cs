@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using Autofac;
 using Netrunner.Server.Attributes;
 using Netrunner.Server.Services;
+using Netrunner.Shared.Internal;
 using WampSharp.V2;
 
 namespace Netrunner.Server
 {
     public class ServiceHost
     {
-        const string location = "ws://crossbar:8080/ws";
+        const string location = "ws://crossbar:8080/internal";
         const string realmName = "netrunner";
 
         private readonly List<object> _hostedServices = new();
@@ -28,7 +29,7 @@ namespace Netrunner.Server
         private async Task RunWampServices(ILifetimeScope container, CancellationToken cancellationToken)
         {
             var channelFactory = new DefaultWampChannelFactory();
-            var channel = channelFactory.CreateMsgpackChannel(location, realmName, new WampTicketAuthenticator());
+            var channel = channelFactory.CreateMsgpackChannel(location, realmName, new WampInternalTicketAuthenticator());
             await channel.Open().ConfigureAwait(false);
             var realm = channel.RealmProxy;
             await using (var scope = container.BeginLifetimeScope())

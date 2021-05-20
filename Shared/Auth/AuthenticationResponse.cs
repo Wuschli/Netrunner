@@ -1,4 +1,4 @@
-﻿namespace Netrunner.Shared.Identity
+﻿namespace Netrunner.Shared.Auth
 {
     public class AuthenticationResponse
     {

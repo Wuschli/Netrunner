@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Netrunner.Shared.Identity
+namespace Netrunner.Shared.Auth
 {
     public class LoginRequest
     {

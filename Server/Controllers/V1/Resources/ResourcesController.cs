@@ -1,27 +1,20 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Threading.Tasks;
 using MongoDB.Driver;
 using Netrunner.Server.Configs;
-using Netrunner.Server.Identity.Data;
 using Netrunner.Server.Services;
-using Netrunner.Shared.Chat;
 using Netrunner.Shared.Resources;
 
 namespace Netrunner.Server.Controllers.V1.Resources
 {
-    [Route("api/v1/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class ResourcesController : ControllerBase
+    public class ResourcesController
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserManager _userManager;
         private readonly IUserManager _userService;
         private readonly IMongoCollection<Resource> _resources;
 
 
-        public ResourcesController(NetrunnerConfig config, UserManager<ApplicationUser> userManager, IUserManager userService)
+        public ResourcesController(NetrunnerConfig config, IUserManager userManager, IUserManager userService)
         {
             _userManager = userManager;
             _userService = userService;
@@ -30,13 +23,13 @@ namespace Netrunner.Server.Controllers.V1.Resources
             _resources = database.GetCollection<Resource>(config.Database.ChatRoomCollectionName);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Resource>> GetResource(string id)
+        public async Task<Resource> GetResource(string id)
         {
-            var user = await _userService.GetCurrentUser();
-            if (user == null)
-                return Forbid();
-            return Ok();
+            throw new NotImplementedException();
+            //var user = await _userService.GetCurrentUser();
+            //if (user == null)
+            //    return Forbid();
+            //return Ok();
         }
     }
 }
