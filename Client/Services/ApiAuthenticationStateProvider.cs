@@ -9,23 +9,21 @@ using Blazored.LocalStorage;
 using JWT;
 using JWT.Algorithms;
 using JWT.Builder;
+using JWT.Exceptions;
 using JWT.Serializers;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace Netrunner.Client.Services
 {
     public class ApiAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
 
         private AuthenticationState AnonymousState => new(new ClaimsPrincipal(new ClaimsIdentity()));
 
-        public ApiAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorage)
+        public ApiAuthenticationStateProvider(ILocalStorageService localStorage)
         {
-            _httpClient = httpClient;
             _localStorage = localStorage;
         }
 
@@ -48,10 +46,12 @@ namespace Netrunner.Client.Services
                 if (expiryDateTime.DateTime < DateTime.UtcNow)
                     return AnonymousState;
 
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
+                //todo set wamp auth instead
+                //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
+
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims, "jwt")));
             }
-            catch (SecurityTokenExpiredException)
+            catch (TokenExpiredException)
             {
                 Console.WriteLine("Token was expired");
                 return AnonymousState;

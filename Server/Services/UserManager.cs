@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Netrunner.Server.Identity.Data;
 
 namespace Netrunner.Server.Services
@@ -52,10 +50,15 @@ namespace Netrunner.Server.Services
             //return _signInManager.SignInAsync(user, isPersistent, authenticationMethod);
         }
 
-        public Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
+        public Task<SignInResult> PasswordSignInAsync(string userName, string password)
         {
             throw new NotImplementedException();
-            //return _signInManager.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure);
+            //return _signInManager.PasswordSignInAsync(userName, password);
+        }
+
+        public Task<IdentityResult> UpdateAsync(ApplicationUser user)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -67,6 +70,23 @@ namespace Netrunner.Server.Services
         Task<ApplicationUser?> GetCurrentUser();
         Task<IList<string>> GetRolesAsync(ApplicationUser user);
         Task SignInAsync(ApplicationUser user, bool isPersistent, string? authenticationMethod = null);
-        Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure);
+        Task<SignInResult> PasswordSignInAsync(string userName, string password);
+        Task<IdentityResult> UpdateAsync(ApplicationUser user);
+    }
+
+    public class IdentityResult
+    {
+        public bool Succeeded { get; init; }
+        public IEnumerable<Error>? Errors { get; init; }
+    }
+
+    public class Error
+    {
+        public string? Description { get; init; }
+    }
+
+    public class SignInResult
+    {
+        public bool Succeeded { get; init; }
     }
 }

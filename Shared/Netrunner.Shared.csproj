@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Bson" Version="2.12.2" />
+    <PackageReference Include="MongoDB.Bson" Version="2.12.3" />
     <PackageReference Include="WampSharp" Version="20.1.1" />
   </ItemGroup>
 

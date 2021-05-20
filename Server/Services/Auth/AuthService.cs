@@ -49,7 +49,7 @@ namespace Netrunner.Server.Services.Auth
 
         public async Task<AuthenticationResponse> Login(LoginRequest request)
         {
-            var result = await _userManager.PasswordSignInAsync(request.UserName, request.Password, false, false);
+            var result = await _userManager.PasswordSignInAsync(request.UserName, request.Password);
             if (result.Succeeded)
             {
                 var user = _userManager.Users.Single(r => r.Username == request.UserName);

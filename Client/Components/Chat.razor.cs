@@ -4,16 +4,13 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Netrunner.Shared.Chat;
 using System.Net.Http.Json;
 
 namespace Netrunner.Client.Components
 {
-    public partial class Chat : IAsyncDisposable
+    public partial class Chat //: IAsyncDisposable
     {
-        private HubConnection? _hubConnection;
         private readonly List<ChatMessage> _messages = new();
         private string? _messageInput;
         private ChatRoom? _room;
@@ -21,26 +18,27 @@ namespace Netrunner.Client.Components
         [Parameter]
         public string? RoomId { get; set; }
 
-        public bool IsConnected =>
-            _hubConnection?.State == HubConnectionState.Connected;
+        public bool IsConnected => true;
+        //_hubConnection?.State == HubConnectionState.Connected;
 
-        protected override async Task OnInitializedAsync()
-        {
-            _hubConnection = new HubConnectionBuilder()
-                .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"), options => { options.AccessTokenProvider = () => _authHelper.AccessToken; })
-                .AddMessagePackProtocol()
-                .Build();
+        //protected override async Task OnInitializedAsync()
+        //{
+        //TODO connect to wamp
+        //    _hubConnection = new HubConnectionBuilder()
+        //        .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"), options => { options.AccessTokenProvider = () => _authHelper.AccessToken; })
+        //        .AddMessagePackProtocol()
+        //        .Build();
 
-            _hubConnection.On<ChatMessage>("ReceiveMessage", (message) =>
-            {
-                if (message.RoomId != RoomId)
-                    return;
-                _messages.Add(message);
-                StateHasChanged();
-            });
+        //    _hubConnection.On<ChatMessage>("ReceiveMessage", (message) =>
+        //    {
+        //        if (message.RoomId != RoomId)
+        //            return;
+        //        _messages.Add(message);
+        //        StateHasChanged();
+        //    });
 
-            await _hubConnection.StartAsync();
-        }
+        //    await _hubConnection.StartAsync();
+        //}
 
         protected override async Task OnParametersSetAsync()
         {
@@ -72,10 +70,10 @@ namespace Netrunner.Client.Components
             NavigationManager.NavigateTo("chat");
         }
 
-        public async ValueTask DisposeAsync()
-        {
-            if (_hubConnection != null)
-                await _hubConnection.DisposeAsync();
-        }
+        //public async ValueTask DisposeAsync()
+        //{
+        //    if (_hubConnection != null)
+        //        await _hubConnection.DisposeAsync();
+        //}
     }
 }
