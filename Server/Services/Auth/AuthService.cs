@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Netrunner.Server.Configs;
 using Netrunner.Server.Identity;
 using Netrunner.Server.Identity.Data;
 using Netrunner.Shared.Identity;
@@ -17,13 +15,11 @@ namespace Netrunner.Server.Services.Auth
     {
         private readonly IUserManager _userManager;
         private readonly IJwtAuthManager _jwtAuthManager;
-        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IUserManager userManager, IJwtAuthManager jwtAuthManager, ILogger<AuthService> logger)
+        public AuthService(IUserManager userManager, IJwtAuthManager jwtAuthManager)
         {
             _userManager = userManager;
             _jwtAuthManager = jwtAuthManager;
-            _logger = logger;
         }
 
         public async Task<AuthenticationResponse> Register(RegistrationRequest request)
