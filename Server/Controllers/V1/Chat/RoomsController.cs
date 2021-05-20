@@ -7,6 +7,7 @@ using Netrunner.Server.Configs;
 using Netrunner.Server.Identity.Data;
 using Netrunner.Server.Services;
 using Netrunner.Shared.Chat;
+using Netrunner.Shared.Internal;
 
 namespace Netrunner.Server.Controllers.V1.Chat
 {
@@ -153,14 +154,14 @@ namespace Netrunner.Server.Controllers.V1.Chat
             //return Ok(user.Invitations);
         }
 
-        public async Task Invite(string roomId, string userName)
+        public async Task Invite(string roomId, string username)
         {
             throw new NotImplementedException();
             //var user = await _userService.GetCurrentUser();
             //if (user == null)
             //    return Forbid();
 
-            //var invited = await _userManager.FindByNameAsync(userName);
+            //var invited = await _userManager.FindByNameAsync(username);
             //if (invited == null)
             //    return NotFound();
 
@@ -189,7 +190,7 @@ namespace Netrunner.Server.Controllers.V1.Chat
         }
 
 
-        private async Task<IdentityResult> AddInviteToUser(ApplicationUser user, string roomId)
+        private async Task<OperationResult> AddInviteToUser(ApplicationUser user, string roomId)
         {
             if (user.Invitations == null!)
                 user.Invitations = new List<string>();
@@ -199,7 +200,7 @@ namespace Netrunner.Server.Controllers.V1.Chat
             return await _userManager.UpdateAsync(user);
         }
 
-        private async Task<IdentityResult> AddRoomToUser(ApplicationUser user, string roomId)
+        private async Task<OperationResult> AddRoomToUser(ApplicationUser user, string roomId)
         {
             if (user.Rooms == null!)
                 user.Rooms = new List<string>();
@@ -212,7 +213,7 @@ namespace Netrunner.Server.Controllers.V1.Chat
             return await _userManager.UpdateAsync(user);
         }
 
-        private async Task<IdentityResult> RemoveRoomFromUser(ApplicationUser user, string roomId)
+        private async Task<OperationResult> RemoveRoomFromUser(ApplicationUser user, string roomId)
         {
             if (user.Rooms == null!)
                 user.Rooms = new List<string>();

@@ -23,10 +23,10 @@ namespace Netrunner.Server.Controllers.V1.User
             _mapper = mapper;
         }
 
-        public async Task<UserProfile> GetUserProfile(string userName)
+        public async Task<UserProfile> GetUserProfile(string username)
         {
             throw new NotImplementedException();
-            //var user = await _userManager.FindByNameAsync(userName);
+            //var user = await _userManager.FindByNameAsync(username);
             //if (user == null)
             //    return NotFound();
             //var profile = _mapper.Map<UserProfile>(user);
@@ -72,17 +72,17 @@ namespace Netrunner.Server.Controllers.V1.User
             //return StatusCode(StatusCodes.Status500InternalServerError, "Could add contact to user");
         }
 
-        public async Task RemoveContact(string userName)
+        public async Task RemoveContact(string username)
         {
             throw new NotImplementedException();
             //var user = await _userService.GetCurrentUser();
             //if (user == null)
             //    return Forbid();
 
-            //if (string.IsNullOrWhiteSpace(userName) || user.Contacts == null)
+            //if (string.IsNullOrWhiteSpace(username) || user.Contacts == null)
             //    return NotFound();
 
-            //var removed = user.Contacts.RemoveAll(c => c.Username.Equals(userName));
+            //var removed = user.Contacts.RemoveAll(c => c.Username.Equals(username));
 
             //if (removed == 0)
             //    return NotFound();

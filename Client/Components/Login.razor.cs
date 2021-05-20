@@ -21,7 +21,7 @@ namespace Netrunner.Client.Components
         private async Task HandleLogin()
         {
             _showErrors = false;
-            var result = await _authHelper.Login(_model.UserName, _model.Password);
+            var result = await _authHelper.Login(_model.Username, _model.Password);
             if (result?.Successful == true)
             {
                 _navigationManager.NavigateTo("/");
@@ -36,7 +36,7 @@ namespace Netrunner.Client.Components
         private async Task HandleRegister()
         {
             _showErrors = false;
-            var result = await _authHelper.Register(_model.UserName, _model.Password);
+            var result = await _authHelper.Register(_model.Username, _model.Password);
             if (result?.Successful == true)
             {
                 _navigationManager.NavigateTo("/");
@@ -51,7 +51,7 @@ namespace Netrunner.Client.Components
         private class Model
         {
             [Required]
-            public string? UserName { get; set; }
+            public string? Username { get; set; }
 
             [Required]
             [DataType(DataType.Password)]

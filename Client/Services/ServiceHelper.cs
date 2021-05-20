@@ -11,7 +11,7 @@ namespace Netrunner.Client.Services
     public interface IServiceHelper
     {
         Task<T> GetService<T>() where T : class;
-        Task SetAuthToken(string? userName, string? token);
+        Task SetAuthToken(string? username, string? token);
     }
 
     public class ServiceHelper : IServiceHelper
@@ -42,15 +42,15 @@ namespace Netrunner.Client.Services
             return proxy;
         }
 
-        public async Task SetAuthToken(string? userName, string? token)
+        public async Task SetAuthToken(string? username, string? token)
         {
             _proxyCache.Clear();
             if (_channel != null)
                 await _channel.Close("Auth Reconnect", new GoodbyeDetails {Message = "Auth Reconnect"});
-            if (userName == null || token == null)
+            if (username == null || token == null)
                 _authenticator = new DefaultWampClientAuthenticator();
             else
-                _authenticator = new WampTicketAuthenticator(userName, token);
+                _authenticator = new WampTicketAuthenticator(username, token);
         }
     }
 }

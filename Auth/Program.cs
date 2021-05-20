@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Netrunner.Shared.Internal;
-using Netrunner.Shared.Services;
 using WampSharp.V2;
 using WampSharp.V2.Client;
 
@@ -9,20 +9,28 @@ namespace Netrunner.Auth
 {
     class Program
     {
+        const string Location = "ws://crossbar:8080/internal";
+        const string RealmName = "netrunner";
+        const string ConfigName = "Authenticator";
+
         static async Task Main(string[] args)
         {
-            const string location = "ws://crossbar:8080/internal";
-            const string realmName = "netrunner";
+            var configRoot = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", false)
+                .AddJsonFile("appsettings.Development.json", true)
+                .Build();
+            var config = configRoot.GetSection(ConfigName).Get<Config>();
 
             DefaultWampChannelFactory channelFactory = new DefaultWampChannelFactory();
 
-            IWampChannel channel = channelFactory.CreateJsonChannel(location, realmName, new WampInternalTicketAuthenticator());
+            IWampChannel channel = channelFactory.CreateJsonChannel(Location, RealmName, new WampInternalTicketAuthenticator());
 
             Task openTask = channel.Open();
 
             await openTask.ConfigureAwait(false);
 
-            var authenticator = new Authenticator();
+            var authenticator = new Authenticator(config);
 
             IWampRealmProxy realm = channel.RealmProxy;
 

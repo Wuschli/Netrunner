@@ -2,7 +2,7 @@
 {
     public class AuthenticationResponse
     {
-        public string UserName { get; init; }
+        public string Username { get; init; }
         public string AccessToken { get; init; }
         public string RefreshToken { get; init; }
         public bool Successful { get; set; }

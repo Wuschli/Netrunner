@@ -16,8 +16,8 @@ namespace Netrunner.Server
             var builder = new ContainerBuilder();
             var configRoot = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile("appsettings.Development.json")
+                .AddJsonFile("appsettings.json", false)
+                .AddJsonFile("appsettings.Development.json", true)
                 .Build();
 
             var config = configRoot.GetSection(ConfigName).Get<NetrunnerConfig>();

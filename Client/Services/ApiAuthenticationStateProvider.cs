@@ -58,10 +58,10 @@ namespace Netrunner.Client.Services
             }
         }
 
-        public void MarkUserAsAuthenticated(string userName)
+        public void MarkUserAsAuthenticated(string username)
         {
             var authenticatedUser =
-                new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, userName)}, "apiAuth"));
+                new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, username)}, "apiAuth"));
             var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
             NotifyAuthenticationStateChanged(authState);
         }

@@ -5,7 +5,7 @@ namespace Netrunner.Shared.Auth
     public class LoginRequest
     {
         [Required]
-        public string UserName { get; set; }
+        public string Username { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

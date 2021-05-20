@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Netrunner.Server.Identity.Data;
+using Netrunner.Shared.Internal;
 
 namespace Netrunner.Server.Services
 {
@@ -32,7 +33,7 @@ namespace Netrunner.Server.Services
             //return user;
         }
 
-        public Task<IdentityResult> CreateAsync(ApplicationUser user, string password)
+        public Task<OperationResult> CreateAsync(ApplicationUser user, string password)
         {
             throw new NotImplementedException();
             //return _userManager.CreateAsync(user, password);
@@ -50,13 +51,13 @@ namespace Netrunner.Server.Services
             //return _signInManager.SignInAsync(user, isPersistent, authenticationMethod);
         }
 
-        public Task<SignInResult> PasswordSignInAsync(string userName, string password)
+        public Task<OperationResult> PasswordSignInAsync(string username, string password)
         {
             throw new NotImplementedException();
-            //return _signInManager.PasswordSignInAsync(userName, password);
+            //return _signInManager.PasswordSignInAsync(username, password);
         }
 
-        public Task<IdentityResult> UpdateAsync(ApplicationUser user)
+        public Task<OperationResult> UpdateAsync(ApplicationUser user)
         {
             throw new NotImplementedException();
         }
@@ -66,27 +67,11 @@ namespace Netrunner.Server.Services
     {
         IQueryable<ApplicationUser> Users { get; }
 
-        Task<IdentityResult> CreateAsync(ApplicationUser user, string password);
+        Task<OperationResult> CreateAsync(ApplicationUser user, string password);
         Task<ApplicationUser?> GetCurrentUser();
         Task<IList<string>> GetRolesAsync(ApplicationUser user);
         Task SignInAsync(ApplicationUser user, bool isPersistent, string? authenticationMethod = null);
-        Task<SignInResult> PasswordSignInAsync(string userName, string password);
-        Task<IdentityResult> UpdateAsync(ApplicationUser user);
-    }
-
-    public class IdentityResult
-    {
-        public bool Succeeded { get; init; }
-        public IEnumerable<Error>? Errors { get; init; }
-    }
-
-    public class Error
-    {
-        public string? Description { get; init; }
-    }
-
-    public class SignInResult
-    {
-        public bool Succeeded { get; init; }
+        Task<OperationResult> PasswordSignInAsync(string username, string password);
+        Task<OperationResult> UpdateAsync(ApplicationUser user);
     }
 }

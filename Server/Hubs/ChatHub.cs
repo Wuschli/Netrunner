@@ -15,10 +15,10 @@ namespace Netrunner.Server.Hubs
 
     //    public override async Task OnConnectedAsync()
     //    {
-    //        var userName = Context.User?.Identity?.Name;
-    //        if (userName != null)
+    //        var username = Context.User?.Identity?.Name;
+    //        if (username != null)
     //        {
-    //            var user = _userManager.Users.Single(r => r.Username == userName);
+    //            var user = _userManager.Users.Single(r => r.Username == username);
     //            if (user?.Rooms != null)
     //            {
     //                foreach (var roomId in user.Rooms)

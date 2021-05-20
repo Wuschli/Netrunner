@@ -9,9 +9,9 @@ namespace Netrunner.Client.Services
     public interface IAuthHelper
     {
         Task<string> AccessToken { get; }
-        Task<AuthenticationResponse?> Login(string? userName, string? password);
+        Task<AuthenticationResponse?> Login(string? username, string? password);
         Task Logout();
-        Task<AuthenticationResponse?> Register(string? userName, string? password);
+        Task<AuthenticationResponse?> Register(string? username, string? password);
     }
 
     public class AuthHelper : IAuthHelper
@@ -30,11 +30,11 @@ namespace Netrunner.Client.Services
             _serviceHelper = serviceHelper;
         }
 
-        public async Task<AuthenticationResponse?> Register(string? userName, string? password)
+        public async Task<AuthenticationResponse?> Register(string? username, string? password)
         {
             var model = new RegistrationRequest
             {
-                UserName = userName,
+                Username = username,
                 Password = password
             };
             var authService = await _serviceHelper.GetService<IAuthService>();
@@ -47,11 +47,11 @@ namespace Netrunner.Client.Services
             return response;
         }
 
-        public async Task<AuthenticationResponse?> Login(string? userName, string? password)
+        public async Task<AuthenticationResponse?> Login(string? username, string? password)
         {
             var model = new LoginRequest
             {
-                UserName = userName,
+                Username = username,
                 Password = password
             };
             var authService = await _serviceHelper.GetService<IAuthService>();
@@ -78,8 +78,8 @@ namespace Netrunner.Client.Services
                 return;
             await _localStorage.SetItemAsync(AuthTokenStorageKey, authentication.AccessToken);
             ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsAuthenticated(authentication
-                .UserName);
-            await _serviceHelper.SetAuthToken(authentication.UserName, authentication.AccessToken);
+                .Username);
+            await _serviceHelper.SetAuthToken(authentication.Username, authentication.AccessToken);
         }
     }
 }

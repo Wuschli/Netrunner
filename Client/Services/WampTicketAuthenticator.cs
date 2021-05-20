@@ -7,16 +7,16 @@ namespace Netrunner.Client.Services
 {
     public class WampTicketAuthenticator : IWampClientAuthenticator
     {
-        private readonly string _userName;
+        private readonly string _username;
         private readonly string _token;
         private static readonly string[] _authenticationMethods = {"ticket"};
 
         public string[] AuthenticationMethods => _authenticationMethods;
-        public string AuthenticationId => _userName;
+        public string AuthenticationId => _username;
 
-        public WampTicketAuthenticator(string userName, string token)
+        public WampTicketAuthenticator(string username, string token)
         {
-            _userName = userName;
+            _username = username;
             _token = token;
         }
 
