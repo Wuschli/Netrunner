@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Netrunner.Shared.Auth;
@@ -74,12 +75,12 @@ namespace Netrunner.Client.Services
 
         private async Task Authenticate(AuthenticationResponse? authentication)
         {
+            Console.WriteLine("Authenticating...");
             if (authentication == null || !authentication.Successful || string.IsNullOrWhiteSpace(authentication.AccessToken))
                 return;
             await _localStorage.SetItemAsync(AuthTokenStorageKey, authentication.AccessToken);
-            ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsAuthenticated(authentication
-                .Username);
             await _serviceHelper.SetAuthToken(authentication.Username, authentication.AccessToken);
+            ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsAuthenticated(authentication.Username);
         }
     }
 }

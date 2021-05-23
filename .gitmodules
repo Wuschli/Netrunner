@@ -1,0 +1,3 @@
+[submodule "WampSharp"]
+	path = WampSharp
+	url = git@github.com:Code-Sharp/WampSharp.git

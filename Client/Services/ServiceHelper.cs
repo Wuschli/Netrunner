@@ -20,6 +20,8 @@ namespace Netrunner.Client.Services
         private readonly Dictionary<Type, object> _proxyCache = new Dictionary<Type, object>();
         private IWampChannel? _channel;
         private IWampClientAuthenticator _authenticator = new DefaultWampClientAuthenticator();
+        private string? _username;
+        private string? _token;
 
         public ServiceHelper(IConfiguration config)
         {
@@ -31,13 +33,9 @@ namespace Netrunner.Client.Services
             if (_proxyCache.TryGetValue(typeof(T), out var service) && service is T typedService)
                 return typedService;
             if (_channel == null)
-            {
-                var wampChannelFactory = new DefaultWampChannelFactory();
-                _channel = wampChannelFactory.CreateJsonChannel(_config["wampAddress"], _config["wampRealm"], _authenticator);
-                await _channel.Open();
-            }
+                await OpenChannel().ConfigureAwait(false);
 
-            var proxy = _channel.RealmProxy.Services.GetCalleeProxy<T>();
+            var proxy = _channel!.RealmProxy.Services.GetCalleeProxy<T>();
             _proxyCache.Add(typeof(T), proxy);
             return proxy;
         }
@@ -45,13 +43,28 @@ namespace Netrunner.Client.Services
         public async Task SetAuthToken(string? username, string? token)
         {
             Console.WriteLine($"Set new auth: {username}, {token}");
+            _username = username;
+            _token = token;
             _proxyCache.Clear();
-            if (_channel != null)
-                await _channel.Close("Auth Reconnect", new GoodbyeDetails {Message = "Auth Reconnect"});
-            if (username == null || token == null)
+            await OpenChannel().ConfigureAwait(false);
+        }
+
+        private async Task OpenChannel()
+        {
+            if (_username == null || _token == null)
                 _authenticator = new DefaultWampClientAuthenticator();
             else
-                _authenticator = new WampTicketAuthenticator(username, token);
+                _authenticator = new WampTicketAuthenticator(_username, _token);
+            if (_channel != null)
+            {
+                //TODO close channel
+                //await _channel.Close("Auth Reconnect", new GoodbyeDetails {Message = "Auth Reconnect"}).ConfigureAwait(false);
+                _channel = null;
+            }
+
+            var wampChannelFactory = new DefaultWampChannelFactory();
+            _channel = wampChannelFactory.CreateJsonChannel(_config["wampAddress"], _config["wampRealm"], _authenticator);
+            await _channel.Open().ConfigureAwait(false);
         }
     }
 }

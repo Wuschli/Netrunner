@@ -56,7 +56,7 @@
               ]
             },
             {
-              "name": "public",
+              "name": "user",
               "permissions": [
                 {
                   "uri": "*",
@@ -112,7 +112,7 @@
               "auth": {
                 "ticket": {
                   "type": "dynamic",
-                  "authenticator": "netrunner.auth.authenticate"
+                  "authenticator": "netrunner.auth.authenticate_simple"
                 },
                 "anonymous": {
                   "type": "static",

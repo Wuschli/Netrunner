@@ -15,12 +15,12 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
     <PackageReference Include="MongoDB.Driver" Version="2.12.3" />
-    <PackageReference Include="WampSharp.Default.Client" Version="20.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Shared.Internal\Netrunner.Shared.Internal.csproj" />
     <ProjectReference Include="..\Shared\Netrunner.Shared.csproj" />
+    <ProjectReference Include="..\WampSharp\src\netstandard\WampSharp.Default.Client\WampSharp.Default.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

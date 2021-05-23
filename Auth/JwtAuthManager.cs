@@ -6,7 +6,9 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using JWT;
 using JWT.Algorithms;
+using JWT.Exceptions;
 using JWT.Serializers;
+using Netrunner.Shared.Internal;
 using Netrunner.Shared.Internal.Auth;
 using Newtonsoft.Json;
 
@@ -74,6 +76,33 @@ namespace Netrunner.Auth
                 AccessToken = accessToken,
                 RefreshToken = refreshToken
             });
+        }
+
+        public Task<OperationResult> ValidateToken(string username, string token)
+        {
+            try
+            {
+                IJsonSerializer serializer = new JsonNetSerializer();
+                var provider = new UtcDateTimeProvider();
+                IJwtValidator validator = new JwtValidator(serializer, provider);
+                IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
+                IJwtAlgorithm algorithm = new HMACSHA256Algorithm(); // symmetric
+                IJwtDecoder decoder = new JwtDecoder(serializer, validator, urlEncoder, algorithm);
+
+                var json = decoder.Decode(token, _secret, verify: true);
+                Console.WriteLine(json);
+                return Task.FromResult(OperationResult.Create(true));
+            }
+            catch (TokenExpiredException)
+            {
+                Console.WriteLine("Token has expired");
+                return Task.FromResult(OperationResult.Create(false, "Token has expired"));
+            }
+            catch (SignatureVerificationException)
+            {
+                Console.WriteLine("Token has invalid signature");
+                return Task.FromResult(OperationResult.Create(false, "Token has invalid signature"));
+            }
         }
 
         private JsonSerializer GetJsonSerializer()
