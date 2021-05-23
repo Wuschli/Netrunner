@@ -23,7 +23,7 @@
                     "caller": true,
                     "publisher": true
                   },
-                  "cache": true
+                  "cache": false
                 },
                 {
                   "uri": "netrunner.auth.*",
@@ -37,7 +37,7 @@
                     "caller": true,
                     "publisher": true
                   },
-                  "cache": true
+                  "cache": false
                 },
                 {
                   "uri": "netrunner.ping",
@@ -51,7 +51,7 @@
                     "caller": true,
                     "publisher": true
                   },
-                  "cache": true
+                  "cache": false
                 }
               ]
             },
@@ -70,7 +70,7 @@
                     "caller": true,
                     "publisher": true
                   },
-                  "cache": true
+                  "cache": false
                 }
               ]
             },
@@ -89,7 +89,7 @@
                     "caller": true,
                     "publisher": true
                   },
-                  "cache": true
+                  "cache": false
                 }
               ]
             }
