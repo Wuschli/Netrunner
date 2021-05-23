@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using WampSharp.V2;
 using WampSharp.V2.Client;
+using WampSharp.V2.Core.Contracts;
 
 namespace Netrunner.Client.Services
 {
@@ -80,13 +81,8 @@ namespace Netrunner.Client.Services
 
             foreach (var sub in _subscriptions.Values)
                 sub.Dispose();
-
-            if (_channel != null)
-            {
-                //TODO close channel
-                //await _channel.Close("Auth Reconnect", new GoodbyeDetails {Message = "Auth Reconnect"}).ConfigureAwait(false);
-                _channel = null;
-            }
+            var oldChannel = _channel;
+            _channel = null;
 
             var wampChannelFactory = new DefaultWampChannelFactory();
             _channel = wampChannelFactory.CreateJsonChannel(_config["wampAddress"], _config["wampRealm"], _authenticator);
@@ -94,6 +90,18 @@ namespace Netrunner.Client.Services
 
             foreach (var sub in _subscriptions.Values)
                 sub.Subscribe(_channel.RealmProxy);
+
+            if (oldChannel != null)
+            {
+                try
+                {
+                    await oldChannel.Close("Auth Reconnect", new GoodbyeDetails {Message = "Auth Reconnect"});
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
         }
 
         public class WampSubscriptionWrapper<T> : IWampSubscriptionWrapper
