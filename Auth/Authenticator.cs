@@ -87,15 +87,6 @@ namespace Netrunner.Auth
             };
         }
 
-        public async Task<string> AuthenticateSimple(string realm, string authId, AuthenticationDetails details)
-        {
-            var validationResult = await _jwtAuthManager.ValidateToken(authId, details.Ticket);
-            if (!validationResult.Succeeded)
-                throw new WampException("netrunner.auth.invalid_ticket");
-
-            return "user";
-        }
-
         private async Task<OperationResult> CreateUserAsync(ApplicationUser user, string password)
         {
             if (string.IsNullOrWhiteSpace(user.Username))

@@ -1,7 +1,6 @@
-﻿using System.Text.Json.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace Netrunner.Shared.Auth
+namespace Netrunner.Shared.Internal.Auth
 {
     public class AuthenticationResult
     {
