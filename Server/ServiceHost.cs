@@ -29,7 +29,7 @@ namespace Netrunner.Server
         private async Task RunWampServices(ILifetimeScope container, CancellationToken cancellationToken)
         {
             var channelFactory = new DefaultWampChannelFactory();
-            var channel = channelFactory.CreateMsgpackChannel(location, realmName, new WampInternalTicketAuthenticator());
+            var channel = channelFactory.CreateJsonChannel(location, realmName, new WampInternalTicketAuthenticator());
             await channel.Open().ConfigureAwait(false);
             var realm = channel.RealmProxy;
 

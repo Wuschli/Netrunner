@@ -48,7 +48,7 @@ namespace Netrunner.Server.Services
                 throw new WampException("netrunner.error.operation_failed");
         }
 
-        public async Task<IEnumerable<string>?> GetInvites()
+        public async Task<List<string>?> GetInvites()
         {
             var user = await _userManager.GetCurrentUser();
             if (user == null)
@@ -58,7 +58,7 @@ namespace Netrunner.Server.Services
             return user.Invitations;
         }
 
-        public async Task<IEnumerable<ChatMessage>?> GetMessages(string roomId, int? skip = null)
+        public async Task<List<ChatMessage>?> GetMessages(string roomId, int? skip = null)
         {
             if (string.IsNullOrWhiteSpace(roomId))
                 throw new WampException("netrunner.error.bad_request");

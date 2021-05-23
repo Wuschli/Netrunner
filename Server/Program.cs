@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Autofac;
+using AutoMapper.Contrib.Autofac.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Netrunner.Server.Attributes;
 using Netrunner.Server.Configs;
@@ -31,6 +32,7 @@ namespace Netrunner.Server
                 .Where(type => type.IsDefined(typeof(WampServiceAttribute)))
                 .AsSelf()
                 .AsImplementedInterfaces();
+            builder.RegisterAutoMapper(Assembly.GetExecutingAssembly());
 
             var container = builder.Build();
             var serviceHost = new ServiceHost();

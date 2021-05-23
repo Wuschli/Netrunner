@@ -10,7 +10,7 @@ namespace Netrunner.Client.Components
 {
     public partial class Chat //: IAsyncDisposable
     {
-        private readonly List<ChatMessage> _messages = new();
+        private List<ChatMessage> _messages = new();
         private string? _messageInput;
         private ChatRoom? _room;
 
@@ -45,10 +45,16 @@ namespace Netrunner.Client.Components
 
             if (string.IsNullOrWhiteSpace(RoomId))
                 return;
+            Console.WriteLine($"Retrieving messages for room {RoomId}");
             var chatService = await _serviceHelper.GetService<IChatService>();
-            var messages = await chatService.GetMessages(RoomId);
+            var messages = await chatService.GetMessages(RoomId).ConfigureAwait(false);
             if (messages != null)
-                _messages.AddRange(messages.Reverse());
+            {
+                messages.Reverse();
+                _messages = messages;
+            }
+
+            Console.WriteLine($"Got {messages.Count} messages for room {RoomId}");
 
             _room = await chatService.GetRoomDetails(RoomId);
         }

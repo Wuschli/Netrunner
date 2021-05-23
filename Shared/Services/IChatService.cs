@@ -28,11 +28,11 @@ namespace Netrunner.Shared.Services
         Task InviteUserToRoom(string roomId, string username);
 
         [WampProcedure("netrunner.chat.get_invites")]
-        Task<IEnumerable<string>?> GetInvites();
+        Task<List<string>?> GetInvites();
 
         //messages
         [WampProcedure("netrunner.chat.get_messages")]
-        Task<IEnumerable<ChatMessage>?> GetMessages(string roomId, int? skip = null);
+        Task<List<ChatMessage>?> GetMessages(string roomId, int? skip = null);
 
         [WampProcedure("netrunner.chat.send_message")]
         Task SendMessage(ChatMessage message);

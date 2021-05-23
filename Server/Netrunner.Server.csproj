@@ -19,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="6.2.0" />
     <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="AutoMapper.Contrib.Autofac.DependencyInjection" Version="5.4.0" />
     <PackageReference Include="Effortless.Net.Encryption" Version="3.3.0" />
     <PackageReference Include="JWT" Version="8.2.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
