@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Netrunner.Server.Attributes;
-using Netrunner.Shared.Internal;
 using WampSharp.V2;
 using WampSharp.V2.Core.Contracts;
 
@@ -12,10 +11,6 @@ namespace Netrunner.Server
 {
     public class ServiceHost
     {
-        const string location = "ws://crossbar:8080/internal";
-        const string realmName = "netrunner";
-
-        private readonly List<object> _hostedServices = new();
         private readonly List<Task> _tasks = new();
 
         public void Run(ILifetimeScope container)
@@ -28,10 +23,9 @@ namespace Netrunner.Server
 
         private async Task RunWampServices(ILifetimeScope container, CancellationToken cancellationToken)
         {
-            var channelFactory = new DefaultWampChannelFactory();
-            var channel = channelFactory.CreateJsonChannel(location, realmName, new WampInternalTicketAuthenticator());
-            await channel.Open().ConfigureAwait(false);
-            var realm = channel.RealmProxy;
+            var wampClientService = container.Resolve<IWampClientService>();
+            var realm = await wampClientService.GetRealmAsync();
+            //var hostedServices = new List<object>();
 
             var registerOptions = new RegisterOptions
             {
@@ -44,8 +38,9 @@ namespace Netrunner.Server
                 foreach (var type in registeredTypes.Where(t => t.IsDefined(typeof(WampServiceAttribute), true)).Distinct())
                 {
                     var instance = scope.Resolve(type);
-                    _hostedServices.Add(instance);
+                    //hostedServices.Add(instance);
                     await realm.Services.RegisterCallee(instance, new CalleeRegistrationInterceptor(registerOptions)).ConfigureAwait(false);
+                    await Task.Yield();
                 }
             }
 

@@ -19,11 +19,13 @@ namespace Netrunner.Server.Services
     {
         private readonly IMongoCollection<ChatRoom> _rooms;
         private readonly IUserManager _userManager;
+        private readonly IWampClientService _wampClientService;
         private readonly IMongoCollection<ChatMessage> _messages;
 
-        public ChatService(NetrunnerConfig config, IUserManager userManager)
+        public ChatService(NetrunnerConfig config, IUserManager userManager, IWampClientService wampClientService)
         {
             _userManager = userManager;
+            _wampClientService = wampClientService;
             var mongoClient = new MongoClient(config.Database.ConnectionString);
             var database = mongoClient.GetDatabase(config.Database.DatabaseName);
             _rooms = database.GetCollection<ChatRoom>(config.Database.ChatRoomCollectionName);
@@ -32,7 +34,7 @@ namespace Netrunner.Server.Services
 
         public async Task CreateRoom(CreateChatRoom room)
         {
-            var user = await _userManager.GetCurrentUser();
+            var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
                 throw new WampException("netrunner.error.not_authorized");
             var dbRoom = new ChatRoom
@@ -50,7 +52,7 @@ namespace Netrunner.Server.Services
 
         public async Task<List<string>?> GetInvites()
         {
-            var user = await _userManager.GetCurrentUser();
+            var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
                 throw new WampException("netrunner.error.not_authorized");
             if (user.Invitations == null || !user.Invitations.Any())
@@ -75,7 +77,7 @@ namespace Netrunner.Server.Services
 
         public async Task<ChatRoom?> GetRoomDetails(string roomId)
         {
-            var user = await _userManager.GetCurrentUser();
+            var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
                 return null;
             var room = await _rooms.Find(r => r.Id == roomId).FirstOrDefaultAsync();
@@ -88,7 +90,7 @@ namespace Netrunner.Server.Services
 
         public async Task<List<ChatRoom>?> GetRooms()
         {
-            var user = await _userManager.GetCurrentUser();
+            var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
                 return null;
 
@@ -101,7 +103,7 @@ namespace Netrunner.Server.Services
 
         public async Task InviteUserToRoom(string roomId, string username)
         {
-            var user = await _userManager.GetCurrentUser();
+            var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
                 throw new WampException("netrunner.error.not_authorized");
 
@@ -133,7 +135,7 @@ namespace Netrunner.Server.Services
 
         public async Task JoinRoom(string roomId)
         {
-            var user = await _userManager.GetCurrentUser();
+            var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
                 throw new WampException("netrunner.error.not_authorized");
 
@@ -162,7 +164,7 @@ namespace Netrunner.Server.Services
 
         public async Task LeaveRoom(string roomId)
         {
-            var user = await _userManager.GetCurrentUser();
+            var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
                 throw new WampException("netrunner.error.not_authorized");
 
@@ -197,7 +199,7 @@ namespace Netrunner.Server.Services
 
         public async Task SendMessage(ChatMessage message)
         {
-            var user = await _userManager.GetCurrentUser();
+            var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
                 throw new WampException("netrunner.error.not_authorized");
 
@@ -221,8 +223,7 @@ namespace Netrunner.Server.Services
 
             await _messages.InsertOneAsync(dbMessage);
 
-            // TODO publish new message
-            //await _chatHubContext.Clients.Group($"room{dbMessage.RoomId}").ReceiveMessage(dbMessage);
+            await _wampClientService.PublishAsync<ChatMessage>($"netrunner.chat.{message.RoomId}.messages", dbMessage);
         }
 
 

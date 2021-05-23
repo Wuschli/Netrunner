@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Netrunner.Shared.Chat;
@@ -13,31 +12,26 @@ namespace Netrunner.Client.Components
         private List<ChatMessage> _messages = new();
         private string? _messageInput;
         private ChatRoom? _room;
+        private Guid? _subscription;
 
         [Parameter]
         public string? RoomId { get; set; }
 
         public bool IsConnected => true;
-        //_hubConnection?.State == HubConnectionState.Connected;
 
-        //protected override async Task OnInitializedAsync()
-        //{
-        //TODO connect to wamp and subscribe
-        //    _hubConnection = new HubConnectionBuilder()
-        //        .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"), options => { options.AccessTokenProvider = () => _authHelper.AccessToken; })
-        //        .AddMessagePackProtocol()
-        //        .Build();
+        protected override async Task OnInitializedAsync()
+        {
+            if (_subscription != null)
+                _serviceHelper.Unsubscribe(_subscription.Value);
 
-        //    _hubConnection.On<ChatMessage>("ReceiveMessage", (message) =>
-        //    {
-        //        if (message.RoomId != RoomId)
-        //            return;
-        //        _messages.Add(message);
-        //        StateHasChanged();
-        //    });
-
-        //    await _hubConnection.StartAsync();
-        //}
+            _subscription = await _serviceHelper.Subscribe<ChatMessage>($"netrunner.chat.{RoomId}.messages", message =>
+            {
+                if (message.RoomId != RoomId)
+                    return;
+                _messages.Add(message);
+                StateHasChanged();
+            });
+        }
 
         protected override async Task OnParametersSetAsync()
         {

@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Netrunner.Shared.Auth;
 using WampSharp.V2.Rpc;
 
 namespace Netrunner.Shared.Internal.Auth

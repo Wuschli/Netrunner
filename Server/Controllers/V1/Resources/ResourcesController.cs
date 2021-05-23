@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using Netrunner.Server.Configs;
-using Netrunner.Server.Services;
 using Netrunner.Server.Services.Internal;
 using Netrunner.Shared.Resources;
 
@@ -27,7 +26,7 @@ namespace Netrunner.Server.Controllers.V1.Resources
         public async Task<Resource> GetResource(string id)
         {
             throw new NotImplementedException();
-            //var user = await _userService.GetCurrentUser();
+            //var user = await _userService.GetCurrentUserAsync();
             //if (user == null)
             //    return Forbid();
             //return Ok();

@@ -33,7 +33,7 @@ namespace Netrunner.Server.Services
 
         public async Task<IEnumerable<Contact>> GetContacts()
         {
-            var user = await _userManager.GetCurrentUser();
+            var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
                 throw new WampException("netrunner.error.not_authorized");
             return user.Contacts ?? Enumerable.Empty<Contact>();
@@ -41,7 +41,7 @@ namespace Netrunner.Server.Services
 
         public async Task AddContact(Contact contact)
         {
-            var user = await _userManager.GetCurrentUser();
+            var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
                 throw new WampException("netrunner.error.not_authorized");
 
@@ -68,7 +68,7 @@ namespace Netrunner.Server.Services
 
         public async Task RemoveContact(string username)
         {
-            var user = await _userManager.GetCurrentUser();
+            var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
                 throw new WampException("netrunner.error.not_authorized");
 

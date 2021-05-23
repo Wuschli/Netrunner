@@ -16,16 +16,4 @@ namespace Netrunner.Shared.Internal.Auth
         [JsonProperty("extra")]
         public AuthenticationExtras Extra { get; set; }
     }
-
-    public class AuthenticationExtras
-    {
-        public string Username { get; set; }
-        public string UserId { get; set; }
-    }
-
-    public class AuthenticationDetails
-    {
-        public long Session { get; set; }
-        public string Ticket { get; set; }
-    }
 }

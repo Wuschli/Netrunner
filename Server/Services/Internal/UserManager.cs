@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MongoDB.Driver;
 using Netrunner.Server.Configs;
 using Netrunner.Shared.Internal;
@@ -20,15 +18,14 @@ namespace Netrunner.Server.Services.Internal
             _users = database.GetCollection<ApplicationUser>(config.Database.UsersCollectionName);
         }
 
-        public async Task<ApplicationUser?> GetCurrentUser()
+        public async Task<ApplicationUser?> GetCurrentUserAsync()
         {
             var context = WampInvocationContext.Current?.InvocationDetails;
             var userId = context?.CallerAuthenticationId;
             if (userId == null)
                 return null;
 
-            var user = await _users.Find(u => u.Id == userId).FirstOrDefaultAsync();
-            return user;
+            return await GetUserAsync(userId);
         }
 
         public async Task<OperationResult> UpdateAsync(ApplicationUser user)
@@ -44,6 +41,11 @@ namespace Netrunner.Server.Services.Internal
         {
             var normalizedUsername = username.ToUpperInvariant();
             return await _users.Find(u => u.NormalizedUsername == normalizedUsername).FirstOrDefaultAsync();
+        }
+
+        public async Task<ApplicationUser?> GetUserAsync(string userId)
+        {
+            return await _users.Find(u => u.Id == userId).FirstOrDefaultAsync();
         }
     }
 }

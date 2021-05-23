@@ -11,12 +11,16 @@ namespace Netrunner.Client.Services
     {
         Task<T> GetService<T>() where T : class;
         Task SetAuthToken(string? userId, string? token);
+        Task<Guid> Subscribe<T>(string topic, Action<T> action);
+        void Unsubscribe(Guid subscriptionId);
     }
 
     public class ServiceHelper : IServiceHelper
     {
         private readonly IConfiguration _config;
         private readonly Dictionary<Type, object> _proxyCache = new Dictionary<Type, object>();
+        private readonly Dictionary<Guid, IWampSubscriptionWrapper> _subscriptions = new Dictionary<Guid, IWampSubscriptionWrapper>();
+
         private IWampChannel? _channel;
         private IWampClientAuthenticator _authenticator = new DefaultWampClientAuthenticator();
         private string? _userId;
@@ -48,12 +52,35 @@ namespace Netrunner.Client.Services
             await OpenChannel().ConfigureAwait(false);
         }
 
+        public async Task<Guid> Subscribe<T>(string topic, Action<T> subscriber)
+        {
+            if (_channel == null)
+                await OpenChannel().ConfigureAwait(false);
+            var wrapper = new WampSubscriptionWrapper<T>(topic, subscriber);
+            wrapper.Subscribe(_channel!.RealmProxy);
+            _subscriptions.Add(wrapper.Id, wrapper);
+            return wrapper.Id;
+        }
+
+        public void Unsubscribe(Guid subscriptionId)
+        {
+            if (_subscriptions.TryGetValue(subscriptionId, out var wrapper))
+            {
+                wrapper.Dispose();
+                _subscriptions.Remove(subscriptionId);
+            }
+        }
+
         private async Task OpenChannel()
         {
             if (_userId == null || _token == null)
                 _authenticator = new DefaultWampClientAuthenticator();
             else
                 _authenticator = new WampTicketAuthenticator(_userId, _token);
+
+            foreach (var sub in _subscriptions.Values)
+                sub.Dispose();
+
             if (_channel != null)
             {
                 //TODO close channel
@@ -64,6 +91,47 @@ namespace Netrunner.Client.Services
             var wampChannelFactory = new DefaultWampChannelFactory();
             _channel = wampChannelFactory.CreateJsonChannel(_config["wampAddress"], _config["wampRealm"], _authenticator);
             await _channel.Open().ConfigureAwait(false);
+
+            foreach (var sub in _subscriptions.Values)
+                sub.Subscribe(_channel.RealmProxy);
         }
+
+        public class WampSubscriptionWrapper<T> : IWampSubscriptionWrapper
+        {
+            private readonly string _topic;
+            private readonly Action<T> _subscriber;
+
+            private IDisposable? _subscription;
+
+            public Guid Id { get; }
+
+            public WampSubscriptionWrapper(string topic, Action<T> subscriber)
+            {
+                _topic = topic;
+                _subscriber = subscriber;
+                Id = Guid.NewGuid();
+            }
+
+            public void Subscribe(IWampRealmProxy realmProxy)
+            {
+                if (_subscription != null)
+                    Dispose();
+                var subject = realmProxy.Services.GetSubject<T>(_topic);
+                _subscription = subject.Subscribe(_subscriber);
+            }
+
+            public void Dispose()
+            {
+                _subscription?.Dispose();
+                _subscription = null;
+            }
+        }
+    }
+
+    public interface IWampSubscriptionWrapper
+    {
+        Guid Id { get; }
+        void Subscribe(IWampRealmProxy realmProxy);
+        void Dispose();
     }
 }

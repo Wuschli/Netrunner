@@ -6,8 +6,9 @@ namespace Netrunner.Server.Services.Internal
 {
     public interface IUserManager
     {
-        Task<ApplicationUser?> GetCurrentUser();
+        Task<ApplicationUser?> GetCurrentUserAsync();
         Task<OperationResult> UpdateAsync(ApplicationUser user);
         Task<ApplicationUser?> FindByNameAsync(string username);
+        Task<ApplicationUser?> GetUserAsync(string userId);
     }
 }

@@ -57,22 +57,7 @@
             },
             {
               "name": "user",
-              "permissions": [
-                {
-                  "uri": "*",
-                  "allow": {
-                    "call": true,
-                    "register": false,
-                    "publish": false,
-                    "subscribe": true
-                  },
-                  "disclose": {
-                    "caller": true,
-                    "publisher": true
-                  },
-                  "cache": false
-                }
-              ]
+              "authorizer": "netrunner.auth.authorize_user"
             },
             {
               "name": "internal",
