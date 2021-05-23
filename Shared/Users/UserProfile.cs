@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Netrunner.Shared.Users
+﻿namespace Netrunner.Shared.Users
 {
     public class UserProfile
     {

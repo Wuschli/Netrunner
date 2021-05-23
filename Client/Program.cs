@@ -1,14 +1,9 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Netrunner.Client.Services;
-using Netrunner.Shared.Services;
-using WampSharp.V2;
-using IAuthService = Netrunner.Shared.Services.IAuthService;
 
 namespace Netrunner.Client
 {

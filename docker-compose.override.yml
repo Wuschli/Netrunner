@@ -30,10 +30,11 @@ services:
       - "traefik.http.services.crossbar.loadbalancer.server.port=8080"
     volumes:
       - ./crossbar:/node/.crossbar
+    command: "--loglevel debug"
   mongo:
     volumes:
       - ./mongodb_data_dev:/data/db
     ports:
       - "27017:27017"
-  netrunner.auth:
+  #netrunner.auth:
 

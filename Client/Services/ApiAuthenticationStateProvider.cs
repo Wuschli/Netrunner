@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
@@ -30,6 +28,7 @@ namespace Netrunner.Client.Services
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             var savedToken = await _localStorage.GetItemAsync<string>(AuthHelper.AuthTokenStorageKey);
+            var savedAuthId = await _localStorage.GetItemAsync<string>(AuthHelper.AuthIdStorageKey);
 
             if (string.IsNullOrWhiteSpace(savedToken))
                 return AnonymousState;
@@ -58,10 +57,9 @@ namespace Netrunner.Client.Services
             }
         }
 
-        public void MarkUserAsAuthenticated(string username)
+        public void MarkUserAsAuthenticated(string userId)
         {
-            var authenticatedUser =
-                new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, username)}, "apiAuth"));
+            var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim(ClaimTypes.NameIdentifier, userId)}, "apiAuth"));
             var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
             NotifyAuthenticationStateChanged(authState);
         }

@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using WampSharp.V2;
 using WampSharp.V2.Client;
-using WampSharp.V2.Core.Contracts;
 
 namespace Netrunner.Client.Services
 {
     public interface IServiceHelper
     {
         Task<T> GetService<T>() where T : class;
-        Task SetAuthToken(string? username, string? token);
+        Task SetAuthToken(string? userId, string? token);
     }
 
     public class ServiceHelper : IServiceHelper
@@ -20,7 +19,7 @@ namespace Netrunner.Client.Services
         private readonly Dictionary<Type, object> _proxyCache = new Dictionary<Type, object>();
         private IWampChannel? _channel;
         private IWampClientAuthenticator _authenticator = new DefaultWampClientAuthenticator();
-        private string? _username;
+        private string? _userId;
         private string? _token;
 
         public ServiceHelper(IConfiguration config)
@@ -40,10 +39,10 @@ namespace Netrunner.Client.Services
             return proxy;
         }
 
-        public async Task SetAuthToken(string? username, string? token)
+        public async Task SetAuthToken(string? userId, string? token)
         {
-            Console.WriteLine($"Set new auth: {username}, {token}");
-            _username = username;
+            Console.WriteLine($"Set new auth: {userId}, {token}");
+            _userId = userId;
             _token = token;
             _proxyCache.Clear();
             await OpenChannel().ConfigureAwait(false);
@@ -51,10 +50,10 @@ namespace Netrunner.Client.Services
 
         private async Task OpenChannel()
         {
-            if (_username == null || _token == null)
+            if (_userId == null || _token == null)
                 _authenticator = new DefaultWampClientAuthenticator();
             else
-                _authenticator = new WampTicketAuthenticator(_username, _token);
+                _authenticator = new WampTicketAuthenticator(_userId, _token);
             if (_channel != null)
             {
                 //TODO close channel

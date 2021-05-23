@@ -42,20 +42,21 @@ namespace Netrunner.Auth
         //    // can be more specific to ip, user agent, device name, etc.
         //    public void RemoveRefreshTokenByUsername(string username)
         //    {
-        //        var refreshTokens = _usersRefreshTokens.Where(x => x.Value.Username == username).ToList();
+        //        var refreshTokens = _usersRefreshTokens.Where(x => x.Value.AuthenticationId == username).ToList();
         //        foreach (var refreshToken in refreshTokens)
         //        {
         //            _usersRefreshTokens.TryRemove(refreshToken.Key, out _);
         //        }
         //    }
 
-        public Task<JwtAuthResult> GenerateTokens(string username, TokenPayload payload, DateTimeOffset now)
+        public Task<JwtAuthResult> GenerateTokens(string userId, TokenPayload payload, DateTimeOffset now)
         {
             var expiration = now.AddMinutes(_config.Jwt.AccessTokenExpiration);
             payload.Expiration ??= expiration.ToUnixTimeSeconds();
             payload.IssuedAt ??= now.ToUnixTimeSeconds();
             payload.Issuer ??= _config.Jwt.Issuer;
             payload.Audience ??= _config.Jwt.Audience;
+            payload.UserId ??= userId;
 
             IJwtAlgorithm algorithm = new HMACSHA256Algorithm(); // symmetric
             IJsonSerializer serializer = new JsonNetSerializer(GetJsonSerializer());
@@ -65,7 +66,7 @@ namespace Netrunner.Auth
 
             var refreshToken = new RefreshToken
             {
-                Username = username,
+                UserId = payload.UserId,
                 TokenString = GenerateRefreshTokenString(),
                 ExpireAt = now.AddMinutes(_config.Jwt.RefreshTokenExpiration)
             };
@@ -78,7 +79,7 @@ namespace Netrunner.Auth
             });
         }
 
-        public Task<OperationResult> ValidateToken(string username, string token)
+        public Task<TokenValidationResult> ValidateToken(string authId, string token)
         {
             try
             {
@@ -89,19 +90,49 @@ namespace Netrunner.Auth
                 IJwtAlgorithm algorithm = new HMACSHA256Algorithm(); // symmetric
                 IJwtDecoder decoder = new JwtDecoder(serializer, validator, urlEncoder, algorithm);
 
-                var json = decoder.Decode(token, _secret, verify: true);
-                Console.WriteLine(json);
-                return Task.FromResult(OperationResult.Create(true));
+                var payload = decoder.DecodeToObject<TokenPayload>(token, _secret, true);
+                if (payload.UserId != authId)
+                {
+                    Console.WriteLine("Token AuthId mismatch");
+                    return Task.FromResult(new TokenValidationResult
+                    {
+                        Succeeded = false,
+                        Errors = new List<Error>
+                        {
+                            new Error {Description = "Token AuthId mismatch"}
+                        }
+                    });
+                }
+
+                return Task.FromResult(new TokenValidationResult
+                {
+                    Succeeded = true,
+                    UserId = payload.UserId
+                });
             }
             catch (TokenExpiredException)
             {
                 Console.WriteLine("Token has expired");
-                return Task.FromResult(OperationResult.Create(false, "Token has expired"));
+                return Task.FromResult(new TokenValidationResult
+                {
+                    Succeeded = false,
+                    Errors = new List<Error>
+                    {
+                        new Error {Description = "Token has expired"}
+                    }
+                });
             }
             catch (SignatureVerificationException)
             {
                 Console.WriteLine("Token has invalid signature");
-                return Task.FromResult(OperationResult.Create(false, "Token has invalid signature"));
+                return Task.FromResult(new TokenValidationResult
+                {
+                    Succeeded = false,
+                    Errors = new List<Error>
+                    {
+                        new Error {Description = "Token has invalid signature"}
+                    }
+                });
             }
         }
 
@@ -129,7 +160,7 @@ namespace Netrunner.Auth
         //        //    throw new SecurityTokenException("Invalid token");
         //        //}
 
-        //        //if (username == null || existingRefreshToken.Username != username || existingRefreshToken.ExpireAt < now)
+        //        //if (username == null || existingRefreshToken.AuthenticationId != username || existingRefreshToken.ExpireAt < now)
         //        //{
         //        //    throw new SecurityTokenException("Invalid token");
         //        //}
@@ -170,6 +201,11 @@ namespace Netrunner.Auth
         }
     }
 
+    public class TokenValidationResult : OperationResult
+    {
+        public string UserId { get; set; }
+    }
+
     public class JwtAuthResult
     {
         public string? AccessToken { get; set; }
@@ -179,7 +215,7 @@ namespace Netrunner.Auth
 
     public class RefreshToken
     {
-        public string? Username { get; set; } // can be used for usage tracking
+        public string? UserId { get; set; } // can be used for usage tracking
         // can optionally include other metadata, such as user agent, ip address, device name, and so on
 
         public string? TokenString { get; set; }

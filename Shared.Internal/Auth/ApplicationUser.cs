@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Netrunner.Shared.Users;
 
 namespace Netrunner.Shared.Internal.Auth
 {
@@ -15,6 +16,9 @@ namespace Netrunner.Shared.Internal.Auth
         public string PasswordHash { get; set; }
         public string Salt { get; set; }
         public List<string> Roles { get; set; } = new();
+        public List<string>? Rooms { get; set; }
+        public List<string>? Invitations { get; set; }
+        public List<Contact>? Contacts { get; set; }
 
         public ApplicationUser()
         {

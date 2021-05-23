@@ -24,7 +24,6 @@ namespace Netrunner.Client.Components
             var result = await _authHelper.Login(_model.Username, _model.Password);
             if (result?.Successful == true)
             {
-                //_navigationManager.NavigateTo("/");
                 Console.WriteLine("Successfully logged in!");
             }
             else

@@ -13,11 +13,11 @@ namespace Netrunner.Shared.Internal
 
         public string AuthenticationId => _authenticationId;
 
-        public AuthenticationResponse Authenticate(string authmethod, ChallengeDetails extra)
+        public AuthenticationResponse Authenticate(string authMethod, ChallengeDetails extra)
         {
-            if (authmethod == "ticket")
+            if (authMethod == "ticket")
             {
-                Console.WriteLine("authenticating via '" + authmethod + "'");
+                Console.WriteLine("authenticating via '" + authMethod + "'");
 
                 var ticket = Environment.GetEnvironmentVariable("WAMP_INTERNAL_TICKET");
                 AuthenticationResponse result = new AuthenticationResponse {Signature = ticket};
@@ -26,7 +26,7 @@ namespace Netrunner.Shared.Internal
             }
             else
             {
-                throw new WampAuthenticationException("don't know how to authenticate using '" + authmethod + "'");
+                throw new WampAuthenticationException("don't know how to authenticate using '" + authMethod + "'");
             }
         }
     }

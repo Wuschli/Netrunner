@@ -78,7 +78,12 @@ namespace Netrunner.Auth
             {
                 Realm = realm,
                 AuthId = authId,
-                Role = "user"
+                Role = "user",
+                Extra = new AuthenticationExtras
+                {
+                    UserId = validationResult.UserId,
+                    Username = authId
+                }
             };
         }
 
@@ -94,7 +99,7 @@ namespace Netrunner.Auth
         private async Task<OperationResult> CreateUserAsync(ApplicationUser user, string password)
         {
             if (string.IsNullOrWhiteSpace(user.Username))
-                return OperationResult.Create(false, "Username must not be empty");
+                return OperationResult.Create(false, "AuthenticationId must not be empty");
 
             if (await FindUserByName(user.Username) != null)
                 return OperationResult.Create(false, "User with this username already exists");
@@ -146,16 +151,16 @@ namespace Netrunner.Auth
         {
             var payload = new TokenPayload
             {
-                Name = user.Username,
-                NameIdentifier = user.Id,
+                Username = user.Username,
+                UserId = user.Id,
                 Roles = user.Roles
             };
 
-            var jwtResult = await _jwtAuthManager.GenerateTokens(user.Username, payload, DateTimeOffset.UtcNow);
+            var jwtResult = await _jwtAuthManager.GenerateTokens(user.Id, payload, DateTimeOffset.UtcNow);
 
             var response = new AuthenticationResponse
             {
-                Username = user.Username,
+                AuthenticationId = user.Id,
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken?.TokenString,
                 Successful = true

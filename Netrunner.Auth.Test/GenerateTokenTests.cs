@@ -32,11 +32,11 @@ namespace Netrunner.Auth.Test
         {
             var payload = new TokenPayload
             {
-                Name = "TestName",
-                NameIdentifier = "TestId",
+                Username = "TestName",
+                UserId = "TestId",
                 Roles = new List<string> {"Role1, Role2"}
             };
-            var result = await _authManager.GenerateTokens("TestName", payload, DateTimeOffset.UtcNow);
+            var result = await _authManager.GenerateTokens("TestId", payload, DateTimeOffset.UtcNow);
             var token = result.AccessToken;
             Assert.NotNull(token);
         }

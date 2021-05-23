@@ -6,10 +6,10 @@ namespace Netrunner.Shared.Internal.Auth
     public class TokenPayload
     {
         [JsonPropertyName("name")]
-        public string? Name { get; set; }
+        public string? Username { get; set; }
 
         [JsonPropertyName("identifier")]
-        public string? NameIdentifier { get; set; }
+        public string? UserId { get; set; }
 
         [JsonPropertyName("roles")]
         public List<string>? Roles { get; set; }
@@ -33,7 +33,7 @@ namespace Netrunner.Shared.Internal.Auth
         public string? NotBefore { get; set; }
 
         [JsonPropertyName("jti")]
-        public string? Id { get; set; }
+        public string? TokenId { get; set; }
 
         [JsonPropertyName("sid")]
         public string? SessionId { get; set; }

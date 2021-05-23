@@ -1,8 +1,4 @@
-﻿using System.Threading.Tasks;
-using Netrunner.Server.Identity.Data;
-using Netrunner.Shared.Chat;
-
-namespace Netrunner.Server.Hubs
+﻿namespace Netrunner.Server.Hubs
 {
     //public class ChatHub : Hub<IChatHub>
     //{
@@ -15,10 +11,10 @@ namespace Netrunner.Server.Hubs
 
     //    public override async Task OnConnectedAsync()
     //    {
-    //        var username = Context.User?.Identity?.Name;
+    //        var username = Context.User?.Identity?.AuthenticationId;
     //        if (username != null)
     //        {
-    //            var user = _userManager.Users.Single(r => r.Username == username);
+    //            var user = _userManager.Users.Single(r => r.AuthenticationId == username);
     //            if (user?.Rooms != null)
     //            {
     //                foreach (var roomId in user.Rooms)

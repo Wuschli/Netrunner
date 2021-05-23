@@ -9,7 +9,7 @@ namespace Netrunner.Shared.Services
     {
         //rooms
         [WampProcedure("netrunner.chat.get_rooms")]
-        Task<List<ChatRoom>> GetRooms();
+        Task<List<ChatRoom>?> GetRooms();
 
         [WampProcedure("netrunner.chat.get_room_details")]
         Task<ChatRoom?> GetRoomDetails(string roomId);
@@ -32,7 +32,7 @@ namespace Netrunner.Shared.Services
 
         //messages
         [WampProcedure("netrunner.chat.get_messages")]
-        Task<IEnumerable<ChatMessage>?> GetMessages(string roomId);
+        Task<IEnumerable<ChatMessage>?> GetMessages(string roomId, int? skip = null);
 
         [WampProcedure("netrunner.chat.send_message")]
         Task SendMessage(ChatMessage message);

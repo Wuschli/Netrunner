@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Netrunner.Server.Attributes;
-using Netrunner.Server.Services;
 using Netrunner.Shared.Internal;
 using WampSharp.V2;
+using WampSharp.V2.Core.Contracts;
 
 namespace Netrunner.Server
 {
@@ -32,6 +32,12 @@ namespace Netrunner.Server
             var channel = channelFactory.CreateMsgpackChannel(location, realmName, new WampInternalTicketAuthenticator());
             await channel.Open().ConfigureAwait(false);
             var realm = channel.RealmProxy;
+
+            var registerOptions = new RegisterOptions
+            {
+                DiscloseCaller = true
+            };
+
             await using (var scope = container.BeginLifetimeScope())
             {
                 var registeredTypes = scope.ComponentRegistry.Registrations.Select(r => r.Activator.LimitType);
@@ -39,7 +45,7 @@ namespace Netrunner.Server
                 {
                     var instance = scope.Resolve(type);
                     _hostedServices.Add(instance);
-                    await realm.Services.RegisterCallee(instance);
+                    await realm.Services.RegisterCallee(instance, new CalleeRegistrationInterceptor(registerOptions)).ConfigureAwait(false);
                 }
             }
 

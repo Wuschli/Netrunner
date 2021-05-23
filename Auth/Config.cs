@@ -1,6 +1,4 @@
-﻿using MongoDB.Driver;
-
-namespace Netrunner.Auth
+﻿namespace Netrunner.Auth
 {
     public class Config
     {

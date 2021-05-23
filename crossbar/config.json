@@ -20,8 +20,8 @@
                     "subscribe": false
                   },
                   "disclose": {
-                    "caller": false,
-                    "publisher": false
+                    "caller": true,
+                    "publisher": true
                   },
                   "cache": true
                 },
@@ -34,8 +34,8 @@
                     "subscribe": false
                   },
                   "disclose": {
-                    "caller": false,
-                    "publisher": false
+                    "caller": true,
+                    "publisher": true
                   },
                   "cache": true
                 },
@@ -48,8 +48,8 @@
                     "subscribe": false
                   },
                   "disclose": {
-                    "caller": false,
-                    "publisher": false
+                    "caller": true,
+                    "publisher": true
                   },
                   "cache": true
                 }
@@ -67,8 +67,8 @@
                     "subscribe": true
                   },
                   "disclose": {
-                    "caller": false,
-                    "publisher": false
+                    "caller": true,
+                    "publisher": true
                   },
                   "cache": true
                 }
@@ -112,7 +112,7 @@
               "auth": {
                 "ticket": {
                   "type": "dynamic",
-                  "authenticator": "netrunner.auth.authenticate_simple"
+                  "authenticator": "netrunner.auth.authenticate"
                 },
                 "anonymous": {
                   "type": "static",

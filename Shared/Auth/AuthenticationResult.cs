@@ -1,25 +1,27 @@
 ﻿using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Netrunner.Shared.Auth
 {
     public class AuthenticationResult
     {
-        [JsonIgnore]
-        //[JsonPropertyName("realm")]
+        [JsonProperty("Realm")]
         public string Realm { get; set; }
 
-        [JsonPropertyName("authid")]
+        [JsonProperty("AuthId")]
         public string AuthId { get; set; }
 
-        [JsonPropertyName("authrole")]
+        [JsonProperty("role")]
         public string Role { get; set; }
 
-        [JsonIgnore]
+        [JsonProperty("extra")]
         public AuthenticationExtras Extra { get; set; }
     }
 
     public class AuthenticationExtras
     {
+        public string Username { get; set; }
+        public string UserId { get; set; }
     }
 
     public class AuthenticationDetails

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Netrunner.Server.Identity.Data;
 using Netrunner.Server.Services;
+using Netrunner.Server.Services.Internal;
 using Netrunner.Shared.Users;
 
 namespace Netrunner.Server.Controllers.V1.User
@@ -49,16 +48,16 @@ namespace Netrunner.Server.Controllers.V1.User
             //if (user == null)
             //    return Forbid();
 
-            //if (string.IsNullOrWhiteSpace(contact.Username))
+            //if (string.IsNullOrWhiteSpace(contact.AuthenticationId))
             //    return NotFound();
 
-            //if (user.Username.Equals(contact.Username))
+            //if (user.AuthenticationId.Equals(contact.AuthenticationId))
             //    return Conflict("Cannot add self as contact");
 
-            //if (user.Contacts != null && user.Contacts.Any(c => c.Username.Equals(contact.Username)))
+            //if (user.Contacts != null && user.Contacts.Any(c => c.AuthenticationId.Equals(contact.AuthenticationId)))
             //    return Conflict("Contact already added");
 
-            //var other = await _userManager.FindByNameAsync(contact.Username);
+            //var other = await _userManager.FindByNameAsync(contact.AuthenticationId);
             //if (other == null)
             //    return NotFound();
 
@@ -82,7 +81,7 @@ namespace Netrunner.Server.Controllers.V1.User
             //if (string.IsNullOrWhiteSpace(username) || user.Contacts == null)
             //    return NotFound();
 
-            //var removed = user.Contacts.RemoveAll(c => c.Username.Equals(username));
+            //var removed = user.Contacts.RemoveAll(c => c.AuthenticationId.Equals(username));
 
             //if (removed == 0)
             //    return NotFound();
