@@ -18,7 +18,6 @@ namespace Netrunner.Client.Services
     public class AuthHelper : IAuthHelper
     {
         public const string AuthTokenStorageKey = "authToken";
-        public const string AuthIdStorageKey = "authId";
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly ILocalStorageService _localStorage;
         private readonly IServiceHelper _serviceHelper;
@@ -70,7 +69,6 @@ namespace Netrunner.Client.Services
         public async Task Logout()
         {
             await _localStorage.RemoveItemAsync(AuthTokenStorageKey);
-            await _localStorage.RemoveItemAsync(AuthIdStorageKey);
             ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsLoggedOut();
             await _serviceHelper.SetAuthToken(null, null);
         }
@@ -81,7 +79,6 @@ namespace Netrunner.Client.Services
             if (authentication == null || !authentication.Successful || string.IsNullOrWhiteSpace(authentication.AccessToken))
                 return;
             await _localStorage.SetItemAsync(AuthTokenStorageKey, authentication.AccessToken);
-            await _localStorage.SetItemAsync(AuthIdStorageKey, authentication.AuthenticationId);
             await _serviceHelper.SetAuthToken(authentication.AuthenticationId, authentication.AccessToken);
             ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsAuthenticated(authentication.AuthenticationId);
         }
