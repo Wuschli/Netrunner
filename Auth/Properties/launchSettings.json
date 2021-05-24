@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Netrunner.Auth": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

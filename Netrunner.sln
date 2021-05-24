@@ -13,6 +13,20 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netrunner.Challenges", "Challenges\Netrunner.Challenges.csproj", "{780A921A-E076-43C5-BB84-82E7D9D17DD6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netrunner.Auth", "Auth\Netrunner.Auth.csproj", "{82F1DD88-1D37-4516-A7FC-E9A20090E0FE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netrunner.Shared.Internal", "Shared.Internal\Netrunner.Shared.Internal.csproj", "{50B85BED-2E6F-4CC1-86AE-7E3E32D6A844}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netrunner.Auth.Test", "Netrunner.Auth.Test\Netrunner.Auth.Test.csproj", "{9E9D5A3B-4992-42F3-85C1-3184B74E6B37}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WampSharp", "WampSharp", "{2C0DC715-088D-430E-9B3B-44AB3AF70AF4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WampSharp", "WampSharp\src\netstandard\WampSharp\WampSharp.csproj", "{CDA81953-5BFC-463B-9362-C38D6E2CB1C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WampSharp.Default", "WampSharp\src\netstandard\WampSharp.Default\WampSharp.Default.csproj", "{1271ABCF-6822-402B-A495-D22309DA79BA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WampSharp.Default.Client", "WampSharp\src\netstandard\WampSharp.Default.Client\WampSharp.Default.Client.csproj", "{45FE20FD-94E2-4B7E-8747-2AA25C29DAF7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,9 +53,38 @@ Global
 		{780A921A-E076-43C5-BB84-82E7D9D17DD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{780A921A-E076-43C5-BB84-82E7D9D17DD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{780A921A-E076-43C5-BB84-82E7D9D17DD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82F1DD88-1D37-4516-A7FC-E9A20090E0FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82F1DD88-1D37-4516-A7FC-E9A20090E0FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82F1DD88-1D37-4516-A7FC-E9A20090E0FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82F1DD88-1D37-4516-A7FC-E9A20090E0FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50B85BED-2E6F-4CC1-86AE-7E3E32D6A844}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50B85BED-2E6F-4CC1-86AE-7E3E32D6A844}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50B85BED-2E6F-4CC1-86AE-7E3E32D6A844}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50B85BED-2E6F-4CC1-86AE-7E3E32D6A844}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E9D5A3B-4992-42F3-85C1-3184B74E6B37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E9D5A3B-4992-42F3-85C1-3184B74E6B37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E9D5A3B-4992-42F3-85C1-3184B74E6B37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E9D5A3B-4992-42F3-85C1-3184B74E6B37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDA81953-5BFC-463B-9362-C38D6E2CB1C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDA81953-5BFC-463B-9362-C38D6E2CB1C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDA81953-5BFC-463B-9362-C38D6E2CB1C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDA81953-5BFC-463B-9362-C38D6E2CB1C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1271ABCF-6822-402B-A495-D22309DA79BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1271ABCF-6822-402B-A495-D22309DA79BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1271ABCF-6822-402B-A495-D22309DA79BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1271ABCF-6822-402B-A495-D22309DA79BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45FE20FD-94E2-4B7E-8747-2AA25C29DAF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45FE20FD-94E2-4B7E-8747-2AA25C29DAF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45FE20FD-94E2-4B7E-8747-2AA25C29DAF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45FE20FD-94E2-4B7E-8747-2AA25C29DAF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CDA81953-5BFC-463B-9362-C38D6E2CB1C9} = {2C0DC715-088D-430E-9B3B-44AB3AF70AF4}
+		{1271ABCF-6822-402B-A495-D22309DA79BA} = {2C0DC715-088D-430E-9B3B-44AB3AF70AF4}
+		{45FE20FD-94E2-4B7E-8747-2AA25C29DAF7} = {2C0DC715-088D-430E-9B3B-44AB3AF70AF4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {373892C8-9339-4C55-AEEA-B6801235AF6D}

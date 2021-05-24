@@ -1,67 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using JWT;
 using JWT.Algorithms;
 using JWT.Builder;
+using JWT.Exceptions;
 using JWT.Serializers;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
+using Netrunner.Shared.Internal.Auth;
 
 namespace Netrunner.Client.Services
 {
     public class ApiAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
+        private readonly IServiceHelper _serviceHelper;
 
         private AuthenticationState AnonymousState => new(new ClaimsPrincipal(new ClaimsIdentity()));
 
-        public ApiAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorage)
+        public ApiAuthenticationStateProvider(ILocalStorageService localStorage, IServiceHelper serviceHelper)
         {
-            _httpClient = httpClient;
             _localStorage = localStorage;
+            _serviceHelper = serviceHelper;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var savedToken = await _localStorage.GetItemAsync<string>(AuthService.AuthTokenStorageKey);
+            var savedToken = await _localStorage.GetItemAsync<string>(AuthHelper.AuthTokenStorageKey);
 
             if (string.IsNullOrWhiteSpace(savedToken))
                 return AnonymousState;
 
             try
             {
-                var claims = ParseClaimsFromJwt(savedToken);
-
-                var expiry = claims.FirstOrDefault(c => c.Type.Equals("exp"));
-                if (expiry == null)
+                var payload = ParseJwt(savedToken);
+                if (payload.Expiration == null)
                     return AnonymousState;
 
-                var expiryDateTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expiry.Value));
+                var expiryDateTime = DateTimeOffset.FromUnixTimeSeconds(payload.Expiration.Value);
                 if (expiryDateTime.DateTime < DateTime.UtcNow)
                     return AnonymousState;
 
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
+                await _serviceHelper.SetAuthToken(payload.UserId, savedToken);
+                var claims = GetClaimsFromTokenPayload(payload);
+
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims, "jwt")));
             }
-            catch (SecurityTokenExpiredException)
+            catch (TokenExpiredException)
             {
                 Console.WriteLine("Token was expired");
                 return AnonymousState;
             }
         }
 
-        public void MarkUserAsAuthenticated(string userName)
+        public void MarkUserAsAuthenticated(string userId)
         {
-            var authenticatedUser =
-                new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, userName)}, "apiAuth"));
+            var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim(ClaimTypes.NameIdentifier, userId)}, "apiAuth"));
             var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
             NotifyAuthenticationStateChanged(authState);
         }
@@ -73,9 +69,8 @@ namespace Netrunner.Client.Services
             NotifyAuthenticationStateChanged(authState);
         }
 
-        private IEnumerable<Claim> ParseClaimsFromJwt(string token)
+        private TokenPayload ParseJwt(string token)
         {
-            var claims = new List<Claim>();
             var serializer = new JsonNetSerializer();
             var dateTimeProvider = new UtcDateTimeProvider();
             var validator = new JwtValidator(serializer, dateTimeProvider);
@@ -84,30 +79,35 @@ namespace Netrunner.Client.Services
             var payload = JwtBuilder.Create()
                 .WithAlgorithm(algorithm)
                 .WithValidator(validator)
-                .Decode<IDictionary<string, object?>>(token);
+                .Decode<TokenPayload>(token);
+            return payload;
+        }
 
-            if (payload.TryGetValue(ClaimTypes.Role, out object? roles) && roles != null)
-            {
-                if (roles.ToString()!.Trim().StartsWith("["))
-                {
-                    var parsedRoles = JsonConvert.DeserializeObject<string[]>(roles.ToString());
-
-                    foreach (var parsedRole in parsedRoles)
-                    {
-                        claims.Add(new Claim(ClaimTypes.Role, parsedRole));
-                    }
-                }
-                else
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, roles.ToString()!));
-                }
-
-                payload.Remove(ClaimTypes.Role);
-            }
-
-            claims.AddRange(payload.Select(kvp => new Claim(kvp.Key, kvp.Value?.ToString() ?? string.Empty)));
-
-            return claims;
+        private IEnumerable<Claim> GetClaimsFromTokenPayload(TokenPayload payload)
+        {
+            if (payload.Username != null)
+                yield return new Claim("name", payload.Username);
+            if (payload.UserId != null)
+                yield return new Claim("identifier", payload.UserId);
+            if (payload.Roles != null)
+                foreach (var role in payload.Roles)
+                    yield return new Claim("role", role);
+            if (payload.Expiration != null)
+                yield return new Claim("exp", payload.Expiration.Value.ToString());
+            if (payload.IssuedAt != null)
+                yield return new Claim("iat", payload.IssuedAt.Value.ToString());
+            if (payload.Subject != null)
+                yield return new Claim("sub", payload.Subject);
+            if (payload.Issuer != null)
+                yield return new Claim("iss", payload.Issuer);
+            if (payload.Audience != null)
+                yield return new Claim("aud", payload.Audience);
+            if (payload.NotBefore != null)
+                yield return new Claim("nbf", payload.NotBefore);
+            if (payload.TokenId != null)
+                yield return new Claim("jti", payload.TokenId);
+            if (payload.SessionId != null)
+                yield return new Claim("sid", payload.SessionId);
         }
     }
 }

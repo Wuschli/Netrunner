@@ -1,7 +1,9 @@
 ﻿@page "/chat/{roomId?}"
 @page "/"
 @using Netrunner.Shared.Chat
-@inject HttpClient Http
+@using Netrunner.Client.Services
+@using Netrunner.Shared.Services
+@inject IServiceHelper _serviceHelper
 
 @if (!string.IsNullOrWhiteSpace(RoomId))
 {
@@ -48,12 +50,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _invites = await Http.GetFromJsonAsync<IEnumerable<string>>("api/v1/rooms/invites");
+        var chatService = await _serviceHelper.GetService<IChatService>();
+        _invites = await chatService.GetInvites();
     }
 
     private async Task HandleCreateRoom()
     {
-        await Http.PostAsJsonAsync("api/v1/rooms", new CreateChatRoom
+        var chatService = await _serviceHelper.GetService<IChatService>();
+        await chatService.CreateRoom(new CreateChatRoom
         {
             Name = _newRoomInput
         });
@@ -65,7 +69,8 @@ else
 
     private async Task HandleJoin(string roomId)
     {
-        await Http.PostAsync($"api/v1/rooms/join/{roomId}", null!);
+        var chatService = await _serviceHelper.GetService<IChatService>();
+        await chatService.JoinRoom(roomId);
 
         if (RoomsComponent != null)
             await RoomsComponent.Refresh();

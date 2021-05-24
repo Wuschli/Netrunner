@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Netrunner.Server.Identity.Data;
+using Netrunner.Shared.Internal.Auth;
 using Netrunner.Shared.Users;
 
 namespace Netrunner.Server.Mapping

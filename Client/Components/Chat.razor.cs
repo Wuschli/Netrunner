@@ -1,45 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Netrunner.Shared.Chat;
-using System.Net.Http.Json;
+using Netrunner.Shared.Services;
 
 namespace Netrunner.Client.Components
 {
-    public partial class Chat : IAsyncDisposable
+    public partial class Chat //: IAsyncDisposable
     {
-        private HubConnection? _hubConnection;
-        private readonly List<ChatMessage> _messages = new();
+        private List<ChatMessage> _messages = new();
         private string? _messageInput;
         private ChatRoom? _room;
+        private Guid? _subscription;
 
         [Parameter]
         public string? RoomId { get; set; }
 
-        public bool IsConnected =>
-            _hubConnection?.State == HubConnectionState.Connected;
+        public bool IsConnected => true;
 
         protected override async Task OnInitializedAsync()
         {
-            _hubConnection = new HubConnectionBuilder()
-                .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"), options => { options.AccessTokenProvider = () => AuthService.AccessToken; })
-                .AddMessagePackProtocol()
-                .Build();
+            if (_subscription != null)
+                _serviceHelper.Unsubscribe(_subscription.Value);
 
-            _hubConnection.On<ChatMessage>("ReceiveMessage", (message) =>
+            _subscription = await _serviceHelper.Subscribe<ChatMessage>($"netrunner.chat.{RoomId}.messages", message =>
             {
                 if (message.RoomId != RoomId)
                     return;
                 _messages.Add(message);
                 StateHasChanged();
             });
-
-            await _hubConnection.StartAsync();
         }
 
         protected override async Task OnParametersSetAsync()
@@ -48,16 +39,24 @@ namespace Netrunner.Client.Components
 
             if (string.IsNullOrWhiteSpace(RoomId))
                 return;
-            var messages = await Http.GetFromJsonAsync<IEnumerable<ChatMessage>>($"api/v1/message/{RoomId}");
+            Console.WriteLine($"Retrieving messages for room {RoomId}");
+            var chatService = await _serviceHelper.GetService<IChatService>();
+            var messages = await chatService.GetMessages(RoomId).ConfigureAwait(false);
             if (messages != null)
-                _messages.AddRange(messages.Reverse());
+            {
+                messages.Reverse();
+                _messages = messages;
+            }
 
-            _room = await Http.GetFromJsonAsync<ChatRoom>($"api/v1/rooms/{RoomId}");
+            Console.WriteLine($"Got {messages.Count} messages for room {RoomId}");
+
+            _room = await chatService.GetRoomDetails(RoomId);
         }
 
         private async Task Send()
         {
-            await Http.PostAsJsonAsync("api/v1/message", new ChatMessage
+            var chatService = await _serviceHelper.GetService<IChatService>();
+            await chatService.SendMessage(new ChatMessage
             {
                 Message = _messageInput,
                 RoomId = RoomId
@@ -65,17 +64,11 @@ namespace Netrunner.Client.Components
             _messageInput = string.Empty;
         }
 
-
         private async Task LeaveRoom()
         {
-            await Http.PostAsync($"api/v1/rooms/leave/{RoomId}", new StringContent(string.Empty));
+            var chatService = await _serviceHelper.GetService<IChatService>();
+            await chatService.LeaveRoom(RoomId);
             NavigationManager.NavigateTo("chat");
-        }
-
-        public async ValueTask DisposeAsync()
-        {
-            if (_hubConnection != null)
-                await _hubConnection.DisposeAsync();
         }
     }
 }

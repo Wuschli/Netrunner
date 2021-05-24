@@ -1,9 +1,8 @@
 ﻿@using Netrunner.Client.Services
-@using Microsoft.Extensions.Configuration
 @using Netrunner.Shared.Services
-@inject IAuthService _authService
+@inject IAuthHelper _authHelper
 @inject NavigationManager _navigationManager
-@inject IPingService _pingService
+@inject IServiceHelper _serviceHelper
 
 <h3>Login</h3>
 
@@ -22,9 +21,9 @@
             <ValidationSummary/>
 
             <div class="form-group">
-                <label for="userName">User Name</label>
-                <InputText Id="userName" Class="form-control" @bind-Value="_model.UserName"/>
-                <ValidationMessage For="@(() => _model.UserName)"/>
+                <label for="username">User Name</label>
+                <InputText Id="username" Class="form-control" @bind-Value="_model.Username"/>
+                <ValidationMessage For="@(() => _model.Username)"/>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>

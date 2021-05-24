@@ -20,13 +20,13 @@
                     "subscribe": false
                   },
                   "disclose": {
-                    "caller": false,
-                    "publisher": false
+                    "caller": true,
+                    "publisher": true
                   },
-                  "cache": true
+                  "cache": false
                 },
                 {
-                  "uri": "netrunner.login.*",
+                  "uri": "netrunner.auth.*",
                   "allow": {
                     "call": true,
                     "register": false,
@@ -34,10 +34,10 @@
                     "subscribe": false
                   },
                   "disclose": {
-                    "caller": false,
-                    "publisher": false
+                    "caller": true,
+                    "publisher": true
                   },
-                  "cache": true
+                  "cache": false
                 },
                 {
                   "uri": "netrunner.ping",
@@ -48,31 +48,16 @@
                     "subscribe": false
                   },
                   "disclose": {
-                    "caller": false,
-                    "publisher": false
+                    "caller": true,
+                    "publisher": true
                   },
-                  "cache": true
+                  "cache": false
                 }
               ]
             },
             {
-              "name": "public",
-              "permissions": [
-                {
-                  "uri": "*",
-                  "allow": {
-                    "call": true,
-                    "register": false,
-                    "publish": false,
-                    "subscribe": true
-                  },
-                  "disclose": {
-                    "caller": false,
-                    "publisher": false
-                  },
-                  "cache": true
-                }
-              ]
+              "name": "user",
+              "authorizer": "netrunner.auth.authorize_user"
             },
             {
               "name": "internal",
@@ -89,7 +74,7 @@
                     "caller": true,
                     "publisher": true
                   },
-                  "cache": true
+                  "cache": false
                 }
               ]
             }
@@ -111,6 +96,19 @@
               "type": "websocket",
               "auth": {
                 "ticket": {
+                  "type": "dynamic",
+                  "authenticator": "netrunner.auth.authenticate"
+                },
+                "anonymous": {
+                  "type": "static",
+                  "role": "anonymous"
+                }
+              }
+            },
+            "internal": {
+              "type": "websocket",
+              "auth": {
+                "ticket": {
                   "type": "static",
                   "principals": {
                     "internal": {
@@ -118,10 +116,6 @@
                       "role": "internal"
                     }
                   }
-                },
-                "anonymous": {
-                  "type": "static",
-                  "role": "anonymous"
                 }
               }
             }

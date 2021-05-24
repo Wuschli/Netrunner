@@ -1,5 +1,7 @@
 ﻿@using Netrunner.Shared.Chat
-@inject HttpClient Http
+@using Netrunner.Client.Services
+@using Netrunner.Shared.Services
+@inject IServiceHelper _serviceHelper
 <h3>Rooms</h3>
 
 @if (_rooms == null)
@@ -29,7 +31,8 @@ else
 
     public async Task Refresh()
     {
-        _rooms = await Http.GetFromJsonAsync<List<ChatRoom>>($"api/v1/rooms");
+        var chatService = await _serviceHelper.GetService<IChatService>();
+        _rooms = await chatService.GetRooms();
     }
 
 }

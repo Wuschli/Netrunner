@@ -13,7 +13,9 @@ namespace Netrunner.Shared.Chat
         [BsonRepresentation(BsonType.ObjectId)]
         public string RoomId { get; set; }
 
-        public Guid Sender { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string SenderId { get; set; }
+
         public string Message { get; set; }
         public DateTime Timestamp { get; set; }
     }

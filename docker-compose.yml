@@ -20,7 +20,6 @@ services:
       - netrunner.server
     environment:
       - NETRUNNER_BASE_URL
-      - WAMP_INTERNAL_TICKET
   netrunner.challenges:
     image: ${DOCKER_REGISTRY-}netrunnerchallenges
     build:
@@ -42,3 +41,13 @@ services:
       - WAMP_INTERNAL_TICKET
   mongo:
     image: mongo
+  netrunner.auth:
+    image: ${DOCKER_REGISTRY-}netrunnerauth
+    build:
+      context: .
+      dockerfile: Auth/Dockerfile
+    environment: 
+      - WAMP_INTERNAL_TICKET
+    depends_on:
+      - crossbar
+

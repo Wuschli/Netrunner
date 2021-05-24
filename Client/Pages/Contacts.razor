@@ -1,6 +1,8 @@
 ﻿@page "/contacts"
 @using Netrunner.Shared.Users
-@inject HttpClient Http
+@using Netrunner.Client.Services
+@using Netrunner.Shared.Services
+@inject IServiceHelper _serviceHelper
 
 <h3>Users</h3>
 @if (_contacts == null)
@@ -13,7 +15,7 @@ else
         @foreach (var user in _contacts)
         {
             <li>
-                <User Name="@user.UserName" OnUpdate="Refresh"></User>
+                <User Name="@user.Username" OnUpdate="Refresh"></User>
             </li>
         }
     </ul>
@@ -41,9 +43,10 @@ else
 
     private async Task HandleAddContact()
     {
-        var result = await Http.PostAsJsonAsync("api/v1/users/contacts", new Contact
+        var contactService = await _serviceHelper.GetService<IContactService>();
+        await contactService.AddContact(new Contact
         {
-            UserName = _newContactInput
+            Username = _newContactInput
         });
         _newContactInput = null;
 
@@ -52,7 +55,8 @@ else
 
     private async Task Refresh()
     {
-        _contacts = await Http.GetFromJsonAsync<IEnumerable<Contact>>("api/v1/users/contacts");
+        var contactService = await _serviceHelper.GetService<IContactService>();
+        _contacts = await contactService.GetContacts();
     }
 
 }

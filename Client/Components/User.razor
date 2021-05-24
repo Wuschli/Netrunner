@@ -1,7 +1,8 @@
 ﻿@using Netrunner.Shared.Users
 @using Netrunner.Shared.Chat
-@using MongoDB.Bson
-@inject HttpClient Http
+@using Netrunner.Client.Services
+@using Netrunner.Shared.Services
+@inject IServiceHelper _serviceHelper
 
 <div>
     <p>
@@ -38,14 +39,19 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var contacts = await Http.GetFromJsonAsync<IEnumerable<Contact>>("api/v1/users/contacts");
-        _isContact = contacts?.Any(c => c.UserName.Equals(Name)) ?? false;
+        var contactService = await _serviceHelper.GetService<IContactService>();
+        var profileService = await _serviceHelper.GetService<IUserProfileService>();
+        var chatService = await _serviceHelper.GetService<IChatService>();
 
-        _profile = await Http.GetFromJsonAsync<UserProfile>($"api/v1/users/{Name}");
+        var contacts = await contactService.GetContacts();
+        _isContact = contacts?.Any(c => c.Username.Equals(Name)) ?? false;
+
+        if (Name != null)
+            _profile = await profileService.GetUserProfile(Name);
         if (_profile == null)
             return;
 
-        var rooms = await Http.GetFromJsonAsync<IEnumerable<ChatRoom>>("api/v1/rooms");
+        var rooms = await chatService.GetRooms();
         _rooms = rooms?.Where(room => !room.Members.Contains(_profile.Id));
     }
 
@@ -53,13 +59,19 @@
 
     private async Task HandleRemoveContact()
     {
-        await Http.DeleteAsync($"api/v1/users/contacts/{Name}");
+        if (Name == null)
+            return;
+        var contactService = await _serviceHelper.GetService<IContactService>();
+        await contactService.RemoveContact(Name);
         await OnUpdate.InvokeAsync();
     }
 
     private async Task HandleInvite(string roomId)
     {
-        await Http.PostAsync($"api/v1/rooms/invites/{roomId}/{Name}", null!);
+        if (Name == null)
+            return;
+        var chatService = await _serviceHelper.GetService<IChatService>();
+        await chatService.InviteUserToRoom(roomId, Name);
     }
 
 }
