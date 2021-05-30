@@ -16,20 +16,16 @@ services:
     labels:
       - "traefik.http.routers.client.rule=Host(`app.${NETRUNNER_BASE_URL}`)"
       - "traefik.http.services.client.loadbalancer.server.port=80"
-    #ports: 
-    #  - "8081:80"
   netrunner.challenges:
     labels:
       - "traefik.http.routers.challenges.rule=Host(`challenges.${NETRUNNER_BASE_URL}`)"
       - "traefik.http.services.challenges.loadbalancer.server.port=80"
-    #ports: 
-    #  - "8082:80"
   crossbar:
     labels:
       - "traefik.http.routers.crossbar.rule=Host(`wamp.${NETRUNNER_BASE_URL}`)"
       - "traefik.http.services.crossbar.loadbalancer.server.port=8080"
     volumes:
-      - ${PWD}/crossbar/config.json:/node/.crossbar/config.json
+      - ${PWD}/crossbar/config.json:/node/.crossbar/config.json:ro
   mongo:
     volumes:
       - /netrunner/mongodb_data:/data/db

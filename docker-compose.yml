@@ -29,12 +29,6 @@ services:
       - netrunner.server
     environment:
       - NETRUNNER_BASE_URL
-  traefik:
-    image: traefik:v2.4
-    command: --providers.docker
-    volumes:
-      # So that Traefik can listen to the Docker events
-      - /var/run/docker.sock:/var/run/docker.sock
   crossbar:
     image: crossbario/crossbar
     environment: 
