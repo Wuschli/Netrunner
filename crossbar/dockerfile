@@ -3,7 +3,7 @@ FROM crossbario/crossbar
 # copy over our own node directory from the host into the image
 # set user "root" before copy and change owner afterwards
 USER root
-COPY ./config.json /node.crossbar/config.json
+COPY ./config.json /node/.crossbar/config.json
 RUN chown -R crossbar:crossbar /node
 
 ENTRYPOINT ["crossbar", "start", "--cbdir", "/node/.crossbar"]
