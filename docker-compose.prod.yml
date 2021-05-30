@@ -32,4 +32,4 @@ services:
       - ${PWD}/crossbar/config.json:/node/.crossbar/config.json
   mongo:
     volumes:
-      - ./mongodb_data:/data/db
+      - /netrunner/mongodb_data:/data/db
