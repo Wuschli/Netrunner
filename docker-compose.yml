@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   netrunner.server:
-    image: ${DOCKER_REGISTRY-}netrunnerserver
+    image: netrunnerserver
     build:
       context: .
       dockerfile: Server/Dockerfile
@@ -12,7 +12,7 @@ services:
     environment:
       - NETRUNNER_BASE_URL
   netrunner.client:
-    image: ${DOCKER_REGISTRY-}netrunnerclient
+    image: netrunnerclient
     build:
       context: .
       dockerfile: Client.dockerfile
@@ -21,7 +21,7 @@ services:
     environment:
       - NETRUNNER_BASE_URL
   netrunner.challenges:
-    image: ${DOCKER_REGISTRY-}netrunnerchallenges
+    image: netrunnerchallenges
     build:
       context: .
       dockerfile: Challenges.dockerfile
@@ -42,7 +42,7 @@ services:
   mongo:
     image: mongo
   netrunner.auth:
-    image: ${DOCKER_REGISTRY-}netrunnerauth
+    image: netrunnerauth
     build:
       context: .
       dockerfile: Auth/Dockerfile
