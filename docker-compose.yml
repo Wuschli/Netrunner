@@ -8,5 +8,37 @@ services:
       dockerfile: Server/Dockerfile
     depends_on: 
       - mongo
+      - crossbar
+    environment:
+      - NETRUNNER_BASE_URL
+  netrunner.client:
+    image: ${DOCKER_REGISTRY-}netrunnerclient
+    build:
+      context: .
+      dockerfile: Client.dockerfile
+    depends_on: 
+      - netrunner.server
+    environment:
+      - NETRUNNER_BASE_URL
+      - WAMP_INTERNAL_TICKET
+  netrunner.challenges:
+    image: ${DOCKER_REGISTRY-}netrunnerchallenges
+    build:
+      context: .
+      dockerfile: Challenges.dockerfile
+    depends_on: 
+      - netrunner.server
+    environment:
+      - NETRUNNER_BASE_URL
+  traefik:
+    image: traefik:v2.4
+    command: --providers.docker
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+  crossbar:
+    image: crossbario/crossbar
+    environment: 
+      - WAMP_INTERNAL_TICKET
   mongo:
     image: mongo

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Netrunner.Server.Configs;
 using Netrunner.Server.Identity;
 using Netrunner.Server.Identity.Data;
-using Netrunner.Server.Models;
 using Netrunner.Shared.Identity;
 
 namespace Netrunner.Server.Controllers.V1.Identity
@@ -20,14 +20,14 @@ namespace Netrunner.Server.Controllers.V1.Identity
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IJwtAuthManager _jwtAuthManager;
-        private readonly IJwtSettings _jwtSettings;
+        private readonly NetrunnerConfig _config;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtAuthManager jwtAuthManager, IJwtSettings jwtSettings)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtAuthManager jwtAuthManager, NetrunnerConfig config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtAuthManager = jwtAuthManager;
-            _jwtSettings = jwtSettings;
+            _config = config;
         }
 
         [HttpPost]
@@ -39,7 +39,7 @@ namespace Netrunner.Server.Controllers.V1.Identity
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
-                //var token = AuthenticationHelper.GenerateJwtToken(user, _jwtSettings);
+                //var token = AuthenticationHelper.GenerateJwtToken(user, _config);
                 //var response = new RegistrationResponse {UserName = user.UserName, AccessToken = token};
                 return Created("api/v1/account/register", await AuthenticateAsync(user));
             }

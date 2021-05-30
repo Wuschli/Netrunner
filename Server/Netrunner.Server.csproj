@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -27,16 +27,19 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
     <PackageReference Include="MongoDB.Driver" Version="2.12.2" />
     <PackageReference Include="MongoDB.Driver.GridFS" Version="2.12.2" />
+    <PackageReference Include="WampSharp.Default" Version="20.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\Netrunner.Client.csproj" />
     <ProjectReference Include="..\Shared\Netrunner.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\V1\Challenges\" />
+    <Folder Include="Controllers\V1\Resources\" />
     <Folder Include="Hubs\" />
   </ItemGroup>
+
 
 
 </Project>

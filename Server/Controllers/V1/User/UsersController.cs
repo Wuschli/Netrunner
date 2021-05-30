@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Netrunner.Server.Identity.Data;
 using Netrunner.Server.Services;
-using Netrunner.Shared.User;
+using Netrunner.Shared.Users;
 
 namespace Netrunner.Server.Controllers.V1.User
 {

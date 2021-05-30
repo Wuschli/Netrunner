@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace Netrunner.Client.Components
@@ -9,13 +10,19 @@ namespace Netrunner.Client.Components
         private bool _showErrors;
         private string _error = "";
 
+        protected override async Task OnInitializedAsync()
+        {
+            Console.WriteLine(await _pingService.Ping());
+            await base.OnInitializedAsync();
+        }
+
         private async Task HandleLogin()
         {
             _showErrors = false;
-            var result = await AuthService.Login(_model.UserName, _model.Password);
+            var result = await _authService.Login(_model.UserName, _model.Password);
             if (result?.Successful == true)
             {
-                NavigationManager.NavigateTo("/");
+                _navigationManager.NavigateTo("/");
             }
             else
             {
@@ -27,10 +34,10 @@ namespace Netrunner.Client.Components
         private async Task HandleRegister()
         {
             _showErrors = false;
-            var result = await AuthService.Register(_model.UserName, _model.Password);
+            var result = await _authService.Register(_model.UserName, _model.Password);
             if (result?.Successful == true)
             {
-                NavigationManager.NavigateTo("/");
+                _navigationManager.NavigateTo("/");
             }
             else
             {
