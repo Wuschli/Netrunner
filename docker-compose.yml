@@ -1,6 +1,7 @@
 version: '3.4'
 
 services:
+
   netrunner.server:
     image: netrunnerserver
     build:
@@ -11,6 +12,7 @@ services:
       - crossbar
     environment:
       - NETRUNNER_BASE_URL
+
   netrunner.client:
     image: netrunnerclient
     build:
@@ -20,6 +22,7 @@ services:
       - netrunner.server
     environment:
       - NETRUNNER_BASE_URL
+
   netrunner.challenges:
     image: netrunnerchallenges
     build:
@@ -29,12 +32,15 @@ services:
       - netrunner.server
     environment:
       - NETRUNNER_BASE_URL
+
   crossbar:
     image: crossbario/crossbar
     environment: 
       - WAMP_INTERNAL_TICKET
+
   mongo:
     image: mongo
+    
   netrunner.auth:
     image: netrunnerauth
     build:

@@ -1,6 +1,7 @@
 version: '3.4'
 
 services:
+
   traefik:
     image: traefik:v2.4
     command: --providers.docker
@@ -11,6 +12,7 @@ services:
       - "80:80"
       - "8080:8080"
     command: --api.insecure=true --providers.docker
+
   netrunner.server:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -20,12 +22,15 @@ services:
     labels:
       - "traefik.http.routers.server.rule=Host(`api.${NETRUNNER_BASE_URL}`)"
       - "traefik.http.services.server.loadbalancer.server.port=80"
+
   netrunner.client:
     profiles:
       - donotstart
+
   netrunner.challenges:
     profiles:
       - donotstart
+
   crossbar:
     labels:
       - "traefik.http.routers.crossbar.rule=Host(`wamp.${NETRUNNER_BASE_URL}`)"
@@ -33,6 +38,7 @@ services:
     volumes:
       - ./crossbar:/node/.crossbar
     command: "--loglevel debug"
+    
   mongo:
     volumes:
       - ./mongodb_data_dev:/data/db
