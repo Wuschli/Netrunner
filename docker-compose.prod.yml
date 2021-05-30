@@ -2,10 +2,8 @@ version: '3.4'
 
 services:
   traefik:
-    ports:
-      - "80:80"
-      - "8080:8080"
-    command: --api.insecure=true --providers.docker
+    profiles:
+      - donotstart
   netrunner.server:
     environment:
       - ASPNETCORE_URLS=http://+:80
