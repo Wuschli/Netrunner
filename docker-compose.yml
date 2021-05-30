@@ -34,13 +34,14 @@ services:
       - NETRUNNER_BASE_URL
 
   crossbar:
-    image: crossbario/crossbar
+    build:
+      context: ./crossbar
     environment: 
       - WAMP_INTERNAL_TICKET
 
   mongo:
     image: mongo
-    
+
   netrunner.auth:
     image: netrunnerauth
     build:
