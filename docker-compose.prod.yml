@@ -1,9 +1,6 @@
 version: '3.4'
 
 services:
-  traefik:
-    profiles:
-      - donotstart
   netrunner.server:
     environment:
       - ASPNETCORE_URLS=http://+:80
