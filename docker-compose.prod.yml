@@ -9,6 +9,8 @@ services:
   netrunner.server:
     environment:
       - ASPNETCORE_URLS=http://+:80
+      - NETRUNNER_BASE_URL
+      - WAMP_INTERNAL_TICKET
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
