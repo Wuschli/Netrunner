@@ -10,8 +10,8 @@ services:
     depends_on: 
       - mongo
       - crossbar
-      environment: 
-        - WAMP_INTERNAL_TICKET
+    environment: 
+      - WAMP_INTERNAL_TICKET
 
   netrunner.auth:
     image: netrunnerauth
