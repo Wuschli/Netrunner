@@ -4,6 +4,7 @@ FROM crossbario/crossbar
 # set user "root" before copy and change owner afterwards
 USER root
 COPY ./config.json /node/.crossbar/config.json
-RUN chown -R crossbar:crossbar /node
+RUN chown -R crossbar:crossbar /node/.crossbar
+USER crossbar
 
 ENTRYPOINT ["crossbar", "start", "--cbdir", "/node/.crossbar"]
