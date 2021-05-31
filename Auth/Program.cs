@@ -27,15 +27,21 @@ namespace Netrunner.Auth
                 .WriteTo.Console()
                 .CreateLogger();
 
-            DefaultWampChannelFactory channelFactory = new DefaultWampChannelFactory();
+            var channelFactory = new DefaultWampChannelFactory();
 
-            IWampChannel channel = channelFactory.CreateJsonChannel(Location, RealmName, new WampInternalTicketAuthenticator());
+            var channel = channelFactory.CreateJsonChannel(Location, RealmName, new WampInternalTicketAuthenticator());
 
             for (var i = 0; i < 100; i++)
             {
                 try
                 {
                     await channel.Open().ConfigureAwait(false);
+
+                    var authenticator = new Authenticator(config);
+
+                    var realm = channel.RealmProxy;
+
+                    await realm.Services.RegisterCallee(authenticator).ConfigureAwait(false);
                     break;
                 }
                 catch (Exception e)
@@ -45,14 +51,6 @@ namespace Netrunner.Auth
                     await Task.Delay(delay);
                 }
             }
-
-            var authenticator = new Authenticator(config);
-
-            IWampRealmProxy realm = channel.RealmProxy;
-
-            Task<IAsyncDisposable> registrationTask = realm.Services.RegisterCallee(authenticator);
-
-            await registrationTask.ConfigureAwait(false);
 
             // This line is required in order to release the WebSocket thread, otherwise it will be blocked by the Console.ReadLine() line.
             await Task.Yield();
