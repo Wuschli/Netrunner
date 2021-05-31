@@ -1,1 +1,1 @@
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d --force-recreate
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d --force-recreate --remove-orphans
