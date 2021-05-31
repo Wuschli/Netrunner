@@ -39,6 +39,8 @@ services:
   mongo:
     volumes:
       - /netrunner/mongodb_data:/data/db
+    networks:
+      - traefik
       
 networks:
   traefik:
