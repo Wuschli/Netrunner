@@ -2,15 +2,6 @@ version: '3.4'
 
 services:
 
-  netrunner.server:
-    environment:
-      - ASPNETCORE_URLS=http://+:80
-      - NETRUNNER_BASE_URL
-      - WAMP_INTERNAL_TICKET
-    labels:
-      - "traefik.http.routers.server.rule=Host(`api.${NETRUNNER_BASE_URL}`)"
-      - "traefik.http.services.server.loadbalancer.server.port=80"
-
   netrunner.client:
     labels:
       - "traefik.http.routers.client.rule=Host(`app.${NETRUNNER_BASE_URL}`)"
@@ -25,6 +16,7 @@ services:
     labels:
       - "traefik.http.routers.crossbar.rule=Host(`wamp.${NETRUNNER_BASE_URL}`)"
       - "traefik.http.services.crossbar.loadbalancer.server.port=8080"
+      command: "--loglevel debug"
 
   mongo:
     volumes:

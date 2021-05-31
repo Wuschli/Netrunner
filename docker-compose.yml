@@ -10,8 +10,19 @@ services:
     depends_on: 
       - mongo
       - crossbar
-    environment:
-      - NETRUNNER_BASE_URL
+      environment: 
+        - WAMP_INTERNAL_TICKET
+
+  netrunner.auth:
+    image: netrunnerauth
+    build:
+      context: .
+      dockerfile: Auth/Dockerfile
+    environment: 
+      - WAMP_INTERNAL_TICKET
+    depends_on:
+      - mongo
+      - crossbar
 
   netrunner.client:
     image: netrunnerclient
@@ -41,14 +52,4 @@ services:
 
   mongo:
     image: mongo
-
-  netrunner.auth:
-    image: netrunnerauth
-    build:
-      context: .
-      dockerfile: Auth/Dockerfile
-    environment: 
-      - WAMP_INTERNAL_TICKET
-    depends_on:
-      - crossbar
 
