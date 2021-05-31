@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Netrunner.Shared.Internal;
@@ -55,7 +56,8 @@ namespace Netrunner.Auth
             // This line is required in order to release the WebSocket thread, otherwise it will be blocked by the Console.ReadLine() line.
             await Task.Yield();
 
-            Console.ReadLine();
+            var cts = new CancellationTokenSource();
+            await cts.Token;
         }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace Netrunner.Server
+namespace Netrunner.Shared.Internal
 {
     public static class AsyncExtensions
     {

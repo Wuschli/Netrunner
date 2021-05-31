@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Netrunner.Server.Attributes;
+using Netrunner.Shared.Internal;
 using WampSharp.V2;
 using WampSharp.V2.Core.Contracts;
 
