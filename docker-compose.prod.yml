@@ -20,6 +20,14 @@ services:
     networks:
       - traefik
 
+  netrunner.server:
+    networks:
+      - traefik
+
+  netrunner.auth:
+    networks:
+      - traefik
+
   crossbar:
     labels:
       - "traefik.http.routers.crossbar.rule=Host(`wamp.${NETRUNNER_BASE_URL}`)"
