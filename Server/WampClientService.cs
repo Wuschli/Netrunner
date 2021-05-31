@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Netrunner.Shared.Internal;
+using Serilog;
 using WampSharp.V2;
 using WampSharp.V2.Client;
 
@@ -24,7 +26,20 @@ namespace Netrunner.Server
             if (_channel == null)
             {
                 _channel = channelFactory.CreateJsonChannel(Location, RealmName, new WampInternalTicketAuthenticator());
-                await _channel.Open().ConfigureAwait(false);
+                for (var i = 0; i < 100; i++)
+                {
+                    try
+                    {
+                        await _channel.Open().ConfigureAwait(false);
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        var delay = 3000;
+                        Log.Warning(e, $"Failed to connect to Router. Trying again in {delay}ms");
+                        await Task.Delay(delay);
+                    }
+                }
             }
 
             await Task.Yield();

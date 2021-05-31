@@ -27,6 +27,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WampSharp.Default", "WampSh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WampSharp.Default.Client", "WampSharp\src\netstandard\WampSharp.Default.Client\WampSharp.Default.Client.csproj", "{45FE20FD-94E2-4B7E-8747-2AA25C29DAF7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WampSharp.NewtonsoftJson", "WampSharp\src\netstandard\Default\WampSharp.NewtonsoftJson\WampSharp.NewtonsoftJson.csproj", "{A80CEC85-D581-4DFC-B663-AEDECCAA3D60}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WampSharp.NewtonsoftMessagePack", "WampSharp\src\netstandard\Default\WampSharp.NewtonsoftMessagePack\WampSharp.NewtonsoftMessagePack.csproj", "{5A0ABF05-3C03-4CA9-AE67-C01BE296A19F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WampSharp.WebSockets", "WampSharp\src\netstandard\Extensions\WampSharp.WebSockets\WampSharp.WebSockets.csproj", "{950183EC-470F-468A-AC3D-EEE1247561C8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WampSharp.Default.Router", "WampSharp\src\netstandard\WampSharp.Default.Router\WampSharp.Default.Router.csproj", "{5EE24090-57D6-4598-B091-4EA8B6FDD794}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WampSharp.Fleck", "WampSharp\src\netstandard\Default\WampSharp.Fleck\WampSharp.Fleck.csproj", "{7B6AD09A-E8BF-48CF-ADE1-21729621A285}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +87,26 @@ Global
 		{45FE20FD-94E2-4B7E-8747-2AA25C29DAF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45FE20FD-94E2-4B7E-8747-2AA25C29DAF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45FE20FD-94E2-4B7E-8747-2AA25C29DAF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A80CEC85-D581-4DFC-B663-AEDECCAA3D60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A80CEC85-D581-4DFC-B663-AEDECCAA3D60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A80CEC85-D581-4DFC-B663-AEDECCAA3D60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A80CEC85-D581-4DFC-B663-AEDECCAA3D60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A0ABF05-3C03-4CA9-AE67-C01BE296A19F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A0ABF05-3C03-4CA9-AE67-C01BE296A19F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A0ABF05-3C03-4CA9-AE67-C01BE296A19F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A0ABF05-3C03-4CA9-AE67-C01BE296A19F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{950183EC-470F-468A-AC3D-EEE1247561C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{950183EC-470F-468A-AC3D-EEE1247561C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{950183EC-470F-468A-AC3D-EEE1247561C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{950183EC-470F-468A-AC3D-EEE1247561C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EE24090-57D6-4598-B091-4EA8B6FDD794}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EE24090-57D6-4598-B091-4EA8B6FDD794}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EE24090-57D6-4598-B091-4EA8B6FDD794}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EE24090-57D6-4598-B091-4EA8B6FDD794}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B6AD09A-E8BF-48CF-ADE1-21729621A285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B6AD09A-E8BF-48CF-ADE1-21729621A285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B6AD09A-E8BF-48CF-ADE1-21729621A285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B6AD09A-E8BF-48CF-ADE1-21729621A285}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,6 +115,11 @@ Global
 		{CDA81953-5BFC-463B-9362-C38D6E2CB1C9} = {2C0DC715-088D-430E-9B3B-44AB3AF70AF4}
 		{1271ABCF-6822-402B-A495-D22309DA79BA} = {2C0DC715-088D-430E-9B3B-44AB3AF70AF4}
 		{45FE20FD-94E2-4B7E-8747-2AA25C29DAF7} = {2C0DC715-088D-430E-9B3B-44AB3AF70AF4}
+		{A80CEC85-D581-4DFC-B663-AEDECCAA3D60} = {2C0DC715-088D-430E-9B3B-44AB3AF70AF4}
+		{5A0ABF05-3C03-4CA9-AE67-C01BE296A19F} = {2C0DC715-088D-430E-9B3B-44AB3AF70AF4}
+		{950183EC-470F-468A-AC3D-EEE1247561C8} = {2C0DC715-088D-430E-9B3B-44AB3AF70AF4}
+		{5EE24090-57D6-4598-B091-4EA8B6FDD794} = {2C0DC715-088D-430E-9B3B-44AB3AF70AF4}
+		{7B6AD09A-E8BF-48CF-ADE1-21729621A285} = {2C0DC715-088D-430E-9B3B-44AB3AF70AF4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {373892C8-9339-4C55-AEEA-B6801235AF6D}

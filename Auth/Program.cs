@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Netrunner.Shared.Internal;
+using Serilog;
 using WampSharp.V2;
 using WampSharp.V2.Client;
 
@@ -22,13 +23,28 @@ namespace Netrunner.Auth
                 .Build();
             var config = configRoot.GetSection(ConfigName).Get<Config>();
 
+            using var log = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+
             DefaultWampChannelFactory channelFactory = new DefaultWampChannelFactory();
 
             IWampChannel channel = channelFactory.CreateJsonChannel(Location, RealmName, new WampInternalTicketAuthenticator());
 
-            Task openTask = channel.Open();
-
-            await openTask.ConfigureAwait(false);
+            for (var i = 0; i < 100; i++)
+            {
+                try
+                {
+                    await channel.Open().ConfigureAwait(false);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    var delay = 3000;
+                    log.Warning(e, $"Failed to connect to Router. Trying again in {delay}ms");
+                    await Task.Delay(delay);
+                }
+            }
 
             var authenticator = new Authenticator(config);
 
