@@ -16,7 +16,7 @@ services:
     labels:
       - "traefik.http.routers.crossbar.rule=Host(`wamp.${NETRUNNER_BASE_URL}`)"
       - "traefik.http.services.crossbar.loadbalancer.server.port=8080"
-      command: "--loglevel debug"
+    command: "--loglevel debug"
 
   mongo:
     volumes:
