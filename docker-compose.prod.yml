@@ -4,8 +4,11 @@ services:
 
   netrunner.client:
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.client.rule=Host(`app.${NETRUNNER_BASE_URL}`)"
       - "traefik.http.services.client.loadbalancer.server.port=80"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
     ports: 
       - 8081:80
     networks:
@@ -13,8 +16,11 @@ services:
 
   netrunner.challenges:
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.challenges.rule=Host(`challenges.${NETRUNNER_BASE_URL}`)"
       - "traefik.http.services.challenges.loadbalancer.server.port=80"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
     ports: 
       - 8082:80
     networks:
@@ -30,8 +36,11 @@ services:
 
   crossbar:
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.crossbar.rule=Host(`wamp.${NETRUNNER_BASE_URL}`)"
       - "traefik.http.services.crossbar.loadbalancer.server.port=8080"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
     command: "--loglevel debug"
     networks:
       - traefik
