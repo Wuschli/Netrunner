@@ -93,7 +93,7 @@ def demo():
     print(decode_services(payload))
 
 
-def advertise():
+def advertise(instanceId):
     ble = ubluetooth.BLE()
     ble.active(True)
     payload = b''
@@ -108,8 +108,8 @@ def advertise():
     payload += b'\xAA\xFE' # 16-bit Eddystone UUID
     payload += b'\x00'  # Frame type (UID)
     payload += b'\x00'  # Calibrated Tx Power at 0m
-    payload += b'\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10' # 10-byte namespace
-    payload += b'\x01\x02\x03\x04\x05\x06'  # 6-byte instance
+    payload += b'\xad\xc2\x9d\x48\x51\xcc\x49\x45\xab\x97' # 10-byte namespace (adc29d48-51cc-4945-ab97)
+    payload += instanceId  # 6-byte instance
     payload += b'\x00' # Reserved for future use, must be 0x00
     payload += b'\x00' # Reserved for future use, must be 0x00
     ble.gap_advertise(interval_us=100000, adv_data=payload)
