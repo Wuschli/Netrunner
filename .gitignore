@@ -7,3 +7,4 @@ crossbar/node.pid
 crossbar/key.pub
 crossbar/key.priv
 *.user
+.vscode
