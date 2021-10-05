@@ -1,21 +1,20 @@
 ﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Netrunner.Server.Attributes;
 using Netrunner.Shared.Internal.Auth;
-using Serilog;
 using WampSharp.V2.MetaApi;
 
-namespace Netrunner.Server.Services.Internal
+namespace Netrunner.Server.Services.Internal.Authorization
 {
     [WampService]
     public class UserAuthorizer : IUserAuthorizer
     {
-        private readonly IUserManager _userManager;
+        private readonly List<AuthorizationRule> _rules = new();
 
         public UserAuthorizer(IUserManager userManager)
         {
-            _userManager = userManager;
+            _rules.Add(new ChatRoomAuthorizer("^netrunner\\.chat\\.(?<roomId>[0-9a-f]+).*$", userManager));
+            _rules.Add(new RoleAuthorizer("^netrunner\\.admin\\..*$", "admin", userManager));
         }
 
         public async Task<AuthorizationResult> AuthorizeUser(WampSessionDetails session, string uri, string action, Dictionary<string, object> options)
@@ -26,31 +25,23 @@ namespace Netrunner.Server.Services.Internal
                 case "subscribe":
                     break;
                 default:
+                {
                     return new AuthorizationResult
                     {
                         Allow = false
                     };
+                }
             }
 
-
-            var regex = new Regex("^netrunner\\.chat\\.(?<roomId>[0-9a-f]+).*$", RegexOptions.IgnoreCase);
-            var match = regex.Match(uri);
-            if (match.Success)
+            foreach (var rule in _rules)
             {
-                var roomId = match.Groups["roomId"].Value;
-                var user = await _userManager.GetUserAsync(session.AuthId);
-                if (user == null)
-                    return new AuthorizationResult();
-                if (user.Rooms != null && user.Rooms.Contains(roomId))
+                if (!await rule.MatchAsync(uri, session))
                 {
                     return new AuthorizationResult
                     {
-                        Allow = true,
-                        Disclose = true
+                        Allow = false
                     };
                 }
-
-                return new AuthorizationResult();
             }
 
             return new AuthorizationResult
