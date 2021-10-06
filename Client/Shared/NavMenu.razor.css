@@ -1,10 +1,10 @@
 .navbar {
     padding: 0 0;
-    width: 70px;
+    width: 50px;
 }
 
 .nav {
-    width: 70px;
+    width: 50px;
 }
 
 .oi {
@@ -17,7 +17,7 @@
 .nav-item {
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
-    width: 70px;
+    width: 50px;
 }
 
 .nav-item:first-of-type { padding-top: 1rem; }
@@ -26,8 +26,8 @@
 
 .nav-item ::deep a {
     color: #d7d7d7;
-    width: 70px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;

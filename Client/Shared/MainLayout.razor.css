@@ -9,8 +9,12 @@
 .sidebar {
     background-color: #000000;
     background-image: none;
-    width: 70px;
+    width: 50px;
     height: 100vh;
     position: sticky;
     top: 0;
+    overflow-y: scroll;
+    scrollbar-width: none;
 }
+
+.sidebar::-webkit-scrollbar { display: none; }
