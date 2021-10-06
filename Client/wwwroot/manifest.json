@@ -2,7 +2,7 @@
   "name": "Netrunner",
   "short_name": "Netrunner",
   "start_url": "./",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#ffffff",
   "theme_color": "#03173d",
   "icons": [
@@ -11,5 +11,6 @@
       "type": "image/png",
       "sizes": "512x512"
     }
-  ]
+  ],
+  "orientation":  "landscape" 
 }
