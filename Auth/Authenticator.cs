@@ -161,7 +161,9 @@ namespace Netrunner.Auth
 
         private async Task<ApplicationUser?> FindUserByName(string username)
         {
-            var user = await _users.Find(u => u.NormalizedUsername == username.ToUpperInvariant()).FirstOrDefaultAsync();
+            username = username.ToUpperInvariant();
+            var users = await _users.Find(_ => true).ToListAsync();
+            var user = await _users.Find(u => u.NormalizedUsername == username).FirstOrDefaultAsync();
             return user;
         }
     }
