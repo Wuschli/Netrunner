@@ -9,6 +9,7 @@ using JWT.Builder;
 using JWT.Exceptions;
 using JWT.Serializers;
 using Microsoft.AspNetCore.Components.Authorization;
+using Netrunner.Shared.Auth;
 using Netrunner.Shared.Internal.Auth;
 
 namespace Netrunner.Client.Services
@@ -55,9 +56,17 @@ namespace Netrunner.Client.Services
             }
         }
 
-        public void MarkUserAsAuthenticated(string userId)
+        public void MarkUserAsAuthenticated(AuthenticationResponse authentication)
         {
-            var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim(ClaimTypes.NameIdentifier, userId)}, "apiAuth"));
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.NameIdentifier, authentication.AuthenticationId)
+            };
+
+            foreach (var role in authentication.Roles)
+                claims.Add(new Claim(ClaimTypes.Role, role));
+
+            var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(claims, "apiAuth"));
             var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
             NotifyAuthenticationStateChanged(authState);
         }

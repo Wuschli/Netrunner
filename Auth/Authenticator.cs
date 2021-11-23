@@ -154,7 +154,8 @@ namespace Netrunner.Auth
                 AuthenticationId = user.Id,
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken?.TokenString,
-                Successful = true
+                Successful = true,
+                Roles = user.Roles
             };
             return response;
         }

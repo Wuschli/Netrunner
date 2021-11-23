@@ -80,7 +80,7 @@ namespace Netrunner.Client.Services
                 return;
             await _localStorage.SetItemAsync(AuthTokenStorageKey, authentication.AccessToken);
             await _serviceHelper.SetAuthToken(authentication.AuthenticationId, authentication.AccessToken);
-            ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsAuthenticated(authentication.AuthenticationId);
+            ((ApiAuthenticationStateProvider) _authenticationStateProvider).MarkUserAsAuthenticated(authentication);
         }
     }
 }

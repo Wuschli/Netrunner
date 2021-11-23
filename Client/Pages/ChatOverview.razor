@@ -1,5 +1,4 @@
 ﻿@page "/chat/{roomId?}"
-@page "/"
 @using Netrunner.Shared.Chat
 @using Netrunner.Client.Services
 @using Netrunner.Shared.Services
@@ -56,6 +55,8 @@ else
 
     private async Task HandleCreateRoom()
     {
+        if (string.IsNullOrEmpty(_newRoomInput))
+            return;
         var chatService = await _serviceHelper.GetService<IChatService>();
         await chatService.CreateRoom(new CreateChatRoom
         {

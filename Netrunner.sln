@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WampSharp.Default.Router", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WampSharp.Fleck", "WampSharp\src\netstandard\Default\WampSharp.Fleck\WampSharp.Fleck.csproj", "{7B6AD09A-E8BF-48CF-ADE1-21729621A285}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Netrunner.Shared.Components", "Shared.Components\Netrunner.Shared.Components.csproj", "{24216E80-F2AF-47E5-96CF-33CACE8CE9A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Netrunner.Shared.Components", "Shared.Components\Netrunner.Shared.Components.csproj", "{24216E80-F2AF-47E5-96CF-33CACE8CE9A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
