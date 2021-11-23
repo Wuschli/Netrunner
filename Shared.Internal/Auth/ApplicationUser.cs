@@ -20,14 +20,10 @@ namespace Netrunner.Shared.Internal.Auth
         public List<string>? Invitations { get; set; }
         public List<Contact>? Contacts { get; set; }
 
-        public ApplicationUser()
-        {
-        }
-
         public ApplicationUser(string username)
         {
             Username = username;
-            NormalizedUsername = username.ToUpperInvariant();
+            NormalizedUsername = username.Normalize().ToUpperInvariant();
         }
     }
 }

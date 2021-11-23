@@ -39,7 +39,7 @@ namespace Netrunner.Server.Services.Internal
 
         public async Task<ApplicationUser?> FindByNameAsync(string username)
         {
-            var normalizedUsername = username.ToUpperInvariant();
+            var normalizedUsername = username.Normalize().ToUpperInvariant();
             return await _users.Find(u => u.NormalizedUsername == normalizedUsername).FirstOrDefaultAsync();
         }
 
