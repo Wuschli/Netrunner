@@ -40,7 +40,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.crossbar.rule=Host(`wamp.${NETRUNNER_BASE_URL}`)"
       - "traefik.http.services.crossbar.loadbalancer.server.port=8080"
-      # - "traefik.http.routers.crossbar.entrypoints=websecure"
       - "traefik.http.routers.crossbar.tls.certresolver=letsencrypt"
     command: "--loglevel debug"
     networks:
@@ -49,6 +48,12 @@ services:
   mongo:
     volumes:
       - /netrunner/mongodb_data:/data/db
+    networks:
+      - traefik
+
+  openldap:
+    volumes:
+      - '/netrunner/openldap_data:/bitnami/openldap'
     networks:
       - traefik
       

@@ -4,7 +4,6 @@ services:
 
   traefik:
     image: traefik:v2.4
-    command: --providers.docker
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
@@ -32,3 +31,10 @@ services:
       - ./mongodb_data_dev:/data/db
     ports:
       - "27017:27017"
+
+  openldap:
+    volumes:
+      - './openldap_data_dev:/bitnami/openldap'
+    ports:
+      - 1389:1389
+      - 1636:1636

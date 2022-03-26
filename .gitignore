@@ -8,3 +8,4 @@ crossbar/key.pub
 crossbar/key.priv
 *.user
 .vscode
+openldap_data_dev

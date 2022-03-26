@@ -53,3 +53,13 @@ services:
   mongo:
     image: mongo
 
+  openldap:
+    image: bitnami/openldap:2
+    environment:
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=adminpassword
+      - LDAP_USERS=user01,user02
+      - LDAP_PASSWORDS=password1,password2
+      - LDAP_ROOT=dc=netrunner,dc=local
+      - LDAP_ALLOW_ANON_BINDING=false
+      - LDAP_GROUP=
