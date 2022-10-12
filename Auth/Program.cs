@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Netrunner.Shared.Internal;
 using Serilog;
+using WampSharp.Default.Client.V2;
 using WampSharp.V2;
 using WampSharp.V2.Client;
 

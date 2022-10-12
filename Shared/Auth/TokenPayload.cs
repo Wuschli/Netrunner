@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Netrunner.Shared.Internal.Auth
+namespace Netrunner.Shared.Auth
 {
     public class TokenPayload
     {

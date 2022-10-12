@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Netrunner.Shared.Auth;
 using Netrunner.Shared.Internal.Auth;
 using NUnit.Framework;
 

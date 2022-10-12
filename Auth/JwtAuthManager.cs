@@ -8,6 +8,7 @@ using JWT;
 using JWT.Algorithms;
 using JWT.Exceptions;
 using JWT.Serializers;
+using Netrunner.Shared.Auth;
 using Netrunner.Shared.Internal;
 using Netrunner.Shared.Internal.Auth;
 using Newtonsoft.Json;

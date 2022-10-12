@@ -12,13 +12,13 @@ services:
       - "8080:8080"
     command: --api.insecure=true --providers.docker
 
-  netrunner.client:
-    profiles:
-      - donotstart
+  #netrunner.client:
+  #  profiles:
+  #    - donotstart
 
-  netrunner.challenges:
-    profiles:
-      - donotstart
+  #netrunner.challenges:
+  #  profiles:
+  #    - donotstart
 
   crossbar:
     labels:
@@ -31,6 +31,10 @@ services:
       - ./mongodb_data_dev:/data/db
     ports:
       - "27017:27017"
+
+  keycloak:
+    ports:
+      - 8081:8080
 
   openldap:
     volumes:

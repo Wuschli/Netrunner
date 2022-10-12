@@ -2,11 +2,11 @@ version: '3.4'
 
 services:
 
-  netrunner.server:
+  netrunner.server_legacy:
     image: netrunnerserver
     build:
       context: .
-      dockerfile: Server/Dockerfile
+      dockerfile: ServerLegacy/Dockerfile
     depends_on: 
       - mongo
       - crossbar
@@ -24,25 +24,25 @@ services:
       - mongo
       - crossbar
 
-  netrunner.client:
-    image: netrunnerclient
-    build:
-      context: .
-      dockerfile: Client.dockerfile
-    depends_on: 
-      - netrunner.server
-    environment:
-      - NETRUNNER_BASE_URL
+  #netrunner.client:
+  #  image: netrunnerclient
+  #  build:
+  #    context: .
+  #    dockerfile: Client.dockerfile
+  #  depends_on: 
+  #    - netrunner.server
+  #  environment:
+  #    - NETRUNNER_BASE_URL
 
-  netrunner.challenges:
-    image: netrunnerchallenges
-    build:
-      context: .
-      dockerfile: Challenges.dockerfile
-    depends_on: 
-      - netrunner.server
-    environment:
-      - NETRUNNER_BASE_URL
+  #netrunner.challenges:
+  #  image: netrunnerchallenges
+  #  build:
+  #    context: .
+  #    dockerfile: Challenges.dockerfile
+  #  depends_on: 
+  #    - netrunner.server
+  #  environment:
+  #    - NETRUNNER_BASE_URL
 
   crossbar:
     build:
@@ -52,6 +52,14 @@ services:
 
   mongo:
     image: mongo
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:19.0.3
+    environment: 
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    command:
+      "start-dev"
 
   openldap:
     image: bitnami/openldap:2
