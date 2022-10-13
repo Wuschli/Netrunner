@@ -27,23 +27,23 @@ services:
   #  networks:
   #    - traefik
 
-  netrunner.server_legacy:
-    networks:
-      - traefik
+  #netrunner.server_legacy:
+  #  networks:
+  #    - traefik
 
-  netrunner.auth:
-    networks:
-      - traefik
+  #netrunner.auth:
+  #  networks:
+  #    - traefik
 
-  crossbar:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.crossbar.rule=Host(`wamp.${NETRUNNER_BASE_URL}`)"
-      - "traefik.http.services.crossbar.loadbalancer.server.port=8080"
-      - "traefik.http.routers.crossbar.tls.certresolver=letsencrypt"
-    command: "--loglevel debug"
-    networks:
-      - traefik
+  #crossbar:
+  #  labels:
+  #    - "traefik.enable=true"
+  #    - "traefik.http.routers.crossbar.rule=Host(`wamp.${NETRUNNER_BASE_URL}`)"
+  #    - "traefik.http.services.crossbar.loadbalancer.server.port=8080"
+  #    - "traefik.http.routers.crossbar.tls.certresolver=letsencrypt"
+  #  command: "--loglevel debug"
+  #  networks:
+  #    - traefik
 
   mongo:
     volumes:
@@ -51,11 +51,11 @@ services:
     networks:
       - traefik
 
-  openldap:
-    volumes:
-      - '/netrunner/openldap_data:/bitnami/openldap'
-    networks:
-      - traefik
+  #openldap:
+  #  volumes:
+  #    - '/netrunner/openldap_data:/bitnami/openldap'
+  #  networks:
+  #    - traefik
       
 networks:
   traefik:
