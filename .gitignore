@@ -9,3 +9,4 @@ crossbar/key.priv
 *.user
 .vscode
 openldap_data_dev
+postgres_data_dev

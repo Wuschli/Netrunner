@@ -20,11 +20,11 @@ services:
   #  profiles:
   #    - donotstart
 
-  crossbar:
-    labels:
-      - "traefik.http.routers.crossbar.rule=Host(`wamp.${NETRUNNER_BASE_URL}`)"
-      - "traefik.http.services.crossbar.loadbalancer.server.port=8080"
-    command: "--loglevel debug"
+  #crossbar:
+  #  labels:
+  #    - "traefik.http.routers.crossbar.rule=Host(`wamp.${NETRUNNER_BASE_URL}`)"
+  #    - "traefik.http.services.crossbar.loadbalancer.server.port=8080"
+  #  command: "--loglevel debug"
 
   mongo:
     volumes:
@@ -32,13 +32,30 @@ services:
     ports:
       - "27017:27017"
 
-  keycloak:
-    ports:
-      - 8081:8080
+  #keycloak:
+  #  ports:
+  #    - 8081:8080
+  #  environment:
+  #        KC_HOSTNAME_URL: "http://auth.${NETRUNNER_BASE_URL}"
+  #  labels:
+  #    - "traefik.http.routers.keycloak.rule=Host(`auth.${NETRUNNER_BASE_URL}`)"
+  #    - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
 
-  openldap:
-    volumes:
-      - './openldap_data_dev:/bitnami/openldap'
-    ports:
-      - 1389:1389
-      - 1636:1636
+  #postgres:
+  #  volumes:
+  #    - ./postgres_data_dev:/var/lib/postgresql/data
+
+  #openldap:
+  #  volumes:
+  #    - './openldap_data_dev:/bitnami/openldap'
+  #  ports:
+  #    - 1389:1389
+  #    - 1636:1636
+  netrunner.server:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    labels:
+      - "traefik.http.routers.netrunner_server.rule=Host(`${NETRUNNER_BASE_URL}`)"
+      - "traefik.http.services.netrunner_server.loadbalancer.server.port=80"
+    #ports:
+    #  - "8082:80"
