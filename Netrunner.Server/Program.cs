@@ -1,17 +1,14 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 var env = builder.Environment;
 
-// prevent from mapping "sub" claim to nameidentifier.
-JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
 IdentityModelEventSource.ShowPII = true;
-
 
 // Add services to the container.
 
@@ -31,7 +28,38 @@ services.AddAuthorization(o => { o.AddPolicy("admin", b => { b.RequireRole("admi
 services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
+services.AddSwaggerGen(c =>
+{
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "oauth2"
+                },
+                Scheme = "oauth2",
+                Name = "oauth2",
+                In = ParameterLocation.Header
+            },
+            new List<string>()
+        }
+    });
+    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.OAuth2,
+        Flows = new OpenApiOAuthFlows
+        {
+            Implicit = new OpenApiOAuthFlow
+            {
+                AuthorizationUrl = new Uri("https://auth.netrunner.app/auth/realms/netrunner/protocol/openid-connect/auth"),
+                TokenUrl = new Uri("https://auth.netrunner.app/auth/realms/netrunner/protocol/openid-connect/token")
+            }
+        }
+    });
+});
 
 var app = builder.Build();
 
@@ -39,7 +67,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c => { c.OAuthClientId("netrunner"); });
 }
 
 app.UseAuthentication();
