@@ -13,7 +13,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.netrunner_server.rule=Host(`${NETRUNNER_BASE_URL}`)"
       - "traefik.http.services.netrunner_server.loadbalancer.server.port=80"
-      - "traefik.http.routers.dedros.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.netrunner_server.tls.certresolver=letsencrypt"
     networks:
       - traefik
       
