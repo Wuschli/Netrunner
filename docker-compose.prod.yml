@@ -15,10 +15,7 @@ services:
       - "traefik.http.services.netrunner_server.loadbalancer.server.port=80"
       - "traefik.http.routers.netrunner_server.tls.certresolver=letsencrypt"
       - "traefik.http.routers.netrunner_server.middlewares=netrunner_server"
-      - "traefik.http.middlewares.netrunner_server.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST"
-      - "traefik.http.middlewares.netrunner_server.headers.accesscontrolalloworigin=`*`"
-      - "traefik.http.middlewares.netrunner_server.headers.accesscontrolmaxage=100"
-      - "traefik.http.middlewares.netrunner_server.headers.addvaryheader=true"
+      - "traefik.http.middlewares.netrunner_server.headers.accesscontrolalloworiginlist=`*`"
     networks:
       - traefik
       
