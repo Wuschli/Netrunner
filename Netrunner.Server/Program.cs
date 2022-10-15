@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
+using Netrunner.Server.Helpers;
 using Netrunner.Server.Services;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -15,6 +17,7 @@ IdentityModelEventSource.ShowPII = true;
 
 services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 services.AddSingleton<IUsersService, UsersService>();
+services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -27,8 +30,7 @@ services
     });
 
 services.AddAuthorization(o => { o.AddPolicy("admin", b => { b.RequireRole("admin"); }); });
-services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+services.AddControllers(o => { o.Filters.Add<HttpResponseExceptionFilter>(); });
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen(c =>
 {

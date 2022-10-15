@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using Netrunner.Server.Helpers;
 using Netrunner.Shared;
 using Netrunner.Shared.Users;

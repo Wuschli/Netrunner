@@ -18,4 +18,24 @@ public abstract class NetrunnerController : ControllerBase
     {
         return await Users.GetOrCreateUser(User.GetId());
     }
+
+    protected HttpResponseException NotFoundException()
+    {
+        return new HttpResponseException(StatusCodes.Status404NotFound);
+    }
+
+    protected HttpResponseException UnauthorizedException()
+    {
+        return new HttpResponseException(StatusCodes.Status401Unauthorized);
+    }
+
+    protected HttpResponseException BadRequestException(string details)
+    {
+        return new HttpResponseException(StatusCodes.Status400BadRequest, details);
+    }
+
+    protected HttpResponseException InternalServerError(string? details = null)
+    {
+        return new HttpResponseException(StatusCodes.Status500InternalServerError, details);
+    }
 }

@@ -9,7 +9,7 @@ public static class UserExtensions
     {
         var idString = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (idString == null)
-            return Guid.Empty;
+            throw new HttpResponseException(StatusCodes.Status401Unauthorized);
         return Guid.Parse(idString);
     }
 }
