@@ -1,4 +1,4 @@
-﻿namespace Netrunner.Shared.Internal
+﻿namespace Netrunner.Shared
 {
     public class Error
     {

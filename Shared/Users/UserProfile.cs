@@ -1,8 +1,10 @@
-﻿namespace Netrunner.Shared.Users
+﻿using System;
+
+namespace Netrunner.Shared.Users
 {
     public class UserProfile
     {
         public string Username { get; set; }
-        public string Id { get; set; }
+        public Guid Id { get; set; }
     }
 }

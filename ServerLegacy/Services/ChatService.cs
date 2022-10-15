@@ -6,16 +6,15 @@ using MongoDB.Driver;
 using Netrunner.ServerLegacy.Attributes;
 using Netrunner.ServerLegacy.Configs;
 using Netrunner.ServerLegacy.Services.Internal;
+using Netrunner.Shared;
 using Netrunner.Shared.Chat;
-using Netrunner.Shared.Internal;
 using Netrunner.Shared.Internal.Auth;
-using Netrunner.Shared.Services;
 using WampSharp.V2.Core.Contracts;
 
 namespace Netrunner.ServerLegacy.Services
 {
     [WampService]
-    public class ChatService : IChatService
+    public class ChatService
     {
         private readonly IMongoCollection<ChatRoom> _rooms;
         private readonly IUserManager _userManager;
@@ -40,8 +39,8 @@ namespace Netrunner.ServerLegacy.Services
             var dbRoom = new ChatRoom
             {
                 Name = room.Name,
-                Invitations = new List<string>(),
-                Members = new List<string> {user.Id}
+                Invitations = new List<Guid>(),
+                Members = new List<Guid> { user.Id }
             };
             await _rooms.InsertOneAsync(dbRoom);
 
@@ -50,19 +49,19 @@ namespace Netrunner.ServerLegacy.Services
                 throw new WampException("netrunner.error.operation_failed");
         }
 
-        public async Task<List<string>?> GetInvites()
+        public async Task<List<Guid>?> GetInvites()
         {
             var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
                 throw new WampException("netrunner.error.not_authorized");
             if (user.Invitations == null || !user.Invitations.Any())
-                return new List<string>();
+                return new List<Guid>();
             return user.Invitations;
         }
 
-        public async Task<List<ChatMessage>?> GetMessages(string roomId, int? skip = null)
+        public async Task<List<ChatMessage>?> GetMessages(Guid roomId, int? skip = null)
         {
-            if (string.IsNullOrWhiteSpace(roomId))
+            if (roomId == Guid.Empty)
                 throw new WampException("netrunner.error.bad_request");
 
             // TODO check user authorization for room
@@ -75,7 +74,7 @@ namespace Netrunner.ServerLegacy.Services
             return result;
         }
 
-        public async Task<ChatRoom?> GetRoomDetails(string roomId)
+        public async Task<ChatRoom?> GetRoomDetails(Guid roomId)
         {
             var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
@@ -101,7 +100,7 @@ namespace Netrunner.ServerLegacy.Services
             return await _rooms.Find(filter).ToListAsync();
         }
 
-        public async Task InviteUserToRoom(string roomId, string username)
+        public async Task InviteUserToRoom(Guid roomId, string username)
         {
             var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
@@ -133,7 +132,7 @@ namespace Netrunner.ServerLegacy.Services
                 throw new WampException("netrunner.error.operation_failed");
         }
 
-        public async Task JoinRoom(string roomId)
+        public async Task JoinRoom(Guid roomId)
         {
             var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
@@ -162,7 +161,7 @@ namespace Netrunner.ServerLegacy.Services
                 throw new WampException("netrunner.error.operation_failed");
         }
 
-        public async Task LeaveRoom(string roomId)
+        public async Task LeaveRoom(Guid roomId)
         {
             var user = await _userManager.GetCurrentUserAsync();
             if (user == null)
@@ -203,7 +202,7 @@ namespace Netrunner.ServerLegacy.Services
             if (user == null)
                 throw new WampException("netrunner.error.not_authorized");
 
-            if (string.IsNullOrWhiteSpace(message.RoomId))
+            if (message.RoomId == Guid.Empty)
                 throw new WampException("netrunner.error.bad_request");
 
             var room = await _rooms.Find(r => r.Id == message.RoomId).FirstOrDefaultAsync();
@@ -227,22 +226,22 @@ namespace Netrunner.ServerLegacy.Services
         }
 
 
-        private async Task<OperationResult> AddInviteToUser(ApplicationUser user, string roomId)
+        private async Task<OperationResult> AddInviteToUser(ApplicationUser user, Guid roomId)
         {
             if (user.Invitations == null!)
-                user.Invitations = new List<string>();
+                user.Invitations = new List<Guid>();
 
             user.Invitations.Add(roomId);
 
             return await _userManager.UpdateAsync(user);
         }
 
-        private async Task<OperationResult> AddRoomToUser(ApplicationUser user, string roomId)
+        private async Task<OperationResult> AddRoomToUser(ApplicationUser user, Guid roomId)
         {
             if (user.Rooms == null!)
-                user.Rooms = new List<string>();
+                user.Rooms = new List<Guid>();
             if (user.Invitations == null!)
-                user.Invitations = new List<string>();
+                user.Invitations = new List<Guid>();
 
             user.Rooms.Add(roomId);
             user.Invitations.Remove(roomId);
@@ -250,19 +249,19 @@ namespace Netrunner.ServerLegacy.Services
             return await _userManager.UpdateAsync(user);
         }
 
-        private async Task<OperationResult> RemoveRoomFromUser(ApplicationUser user, string roomId)
+        private async Task<OperationResult> RemoveRoomFromUser(ApplicationUser user, Guid roomId)
         {
             if (user.Rooms == null!)
-                user.Rooms = new List<string>();
+                user.Rooms = new List<Guid>();
             if (user.Invitations == null!)
-                user.Invitations = new List<string>();
+                user.Invitations = new List<Guid>();
 
             user.Rooms.Remove(roomId);
 
             return await _userManager.UpdateAsync(user);
         }
 
-        private async Task<DeleteResult> DeleteRoom(string roomId)
+        private async Task<DeleteResult> DeleteRoom(Guid roomId)
         {
             return await _rooms.DeleteOneAsync(room => room.Id == roomId);
         }

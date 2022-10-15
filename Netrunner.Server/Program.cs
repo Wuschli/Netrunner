@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
+using Netrunner.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -13,6 +14,7 @@ IdentityModelEventSource.ShowPII = true;
 // Add services to the container.
 
 services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
+services.AddSingleton<IUsersService, UsersService>();
 
 services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

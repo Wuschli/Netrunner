@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Netrunner.Shared.Internal;
+using Netrunner.Shared;
 using Netrunner.Shared.Internal.Auth;
 
 namespace Netrunner.ServerLegacy.Services.Internal

@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MongoDB.Driver;
 using Netrunner.ServerLegacy.Configs;
-using Netrunner.Shared.Internal;
+using Netrunner.Shared;
 using Netrunner.Shared.Internal.Auth;
 using WampSharp.V2;
 
@@ -44,6 +45,11 @@ namespace Netrunner.ServerLegacy.Services.Internal
         }
 
         public async Task<ApplicationUser?> GetUserAsync(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ApplicationUser?> GetUserAsync(Guid userId)
         {
             return await _users.Find(u => u.Id == userId).FirstOrDefaultAsync();
         }

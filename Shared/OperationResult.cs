@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Netrunner.Shared.Internal
+namespace Netrunner.Shared
 {
     public class OperationResult
     {
