@@ -18,6 +18,7 @@ services:
       - "traefik.http.middlewares.netrunner_server.headers.accesscontrolalloworiginlist=*"
       - "traefik.http.middlewares.netrunner_server.headers.accessControlAllowCredentials=true"
       - "traefik.http.middlewares.netrunner_server.headers.accessControlAllowHeaders=*"
+      - "traefik.http.middlewares.netrunner_server.headers.accessControlAllowMethods=*"
     networks:
       - traefik
       
