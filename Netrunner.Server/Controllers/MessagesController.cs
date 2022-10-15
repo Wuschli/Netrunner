@@ -10,11 +10,11 @@ namespace Netrunner.Server.Controllers;
 [Authorize]
 [ApiController]
 [Route("[controller]")]
-public class ChatController : NetrunnerController
+public class MessagesController : NetrunnerController
 {
     private readonly IMongoCollection<ChatMessage> _messages;
 
-    public ChatController(IUsersService users, IConfiguration config) : base(users)
+    public MessagesController(IUsersService users, IConfiguration config) : base(users)
     {
         var mongoClient = new MongoClient(config["DB:ConnectionString"]);
         var database = mongoClient.GetDatabase(config["DB:DatabaseName"]);
