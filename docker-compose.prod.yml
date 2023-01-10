@@ -6,8 +6,6 @@ services:
     restart: always
     volumes:
       - /netrunner/mongodb_data:/data/db
-    networks:
-      - traefik
 
   netrunner.server:
     restart: always
@@ -22,9 +20,11 @@ services:
       - "traefik.http.middlewares.netrunner_server.headers.accessControlAllowHeaders=*"
       - "traefik.http.middlewares.netrunner_server.headers.accessControlAllowMethods=*"
     networks:
+      - default
       - traefik
       
 networks:
+  default:
   traefik:
     external:
       name: traefik_webgateway
