@@ -3,12 +3,14 @@ version: '3.4'
 services:
 
   mongo:
+    restart: always
     volumes:
       - /netrunner/mongodb_data:/data/db
     networks:
       - traefik
 
   netrunner.server:
+    restart: always
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.netrunner_server.rule=Host(`${NETRUNNER_BASE_URL}`)"
