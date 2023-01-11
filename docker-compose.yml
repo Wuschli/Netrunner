@@ -3,7 +3,7 @@ version: '3.4'
 services:
 
   mongo:
-    image: mongo:4.4
+    image: mongo:5
 
   netrunner.server:
     image: ${DOCKER_REGISTRY-}netrunnerserver
