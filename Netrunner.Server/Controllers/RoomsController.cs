@@ -1,11 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using Netrunner.Server.Helpers;
 using Netrunner.Server.Services;
 using Netrunner.Shared;
 using Netrunner.Shared.Chat;
 using Netrunner.Shared.Users;
+using Newtonsoft.Json;
 
 namespace Netrunner.Server.Controllers;
 
@@ -14,12 +19,14 @@ namespace Netrunner.Server.Controllers;
 [Authorize]
 public class RoomsController : NetrunnerController
 {
+    private readonly IConfiguration _config;
     private readonly IMongoCollection<ChatRoom> _rooms;
 
     public RoomsController(IConfiguration config, IUsersService users) : base(users)
     {
-        var mongoClient = new MongoClient(config["DB:ConnectionString"]);
-        var database = mongoClient.GetDatabase(config["DB:DatabaseName"]);
+        _config = config;
+        var mongoClient = new MongoClient(_config["DB:ConnectionString"]);
+        var database = mongoClient.GetDatabase(_config["DB:DatabaseName"]);
         _rooms = database.GetCollection<ChatRoom>(Constants.RoomsCollection);
     }
 
@@ -155,6 +162,42 @@ public class RoomsController : NetrunnerController
         var identityResult = await RemoveRoomFromUser(user, room.Id);
         if (!identityResult.Succeeded)
             throw InternalServerError();
+    }
+
+    [HttpGet("{roomId:guid}/videoToken")]
+    public async Task<VideoRoomAccess> GetVideoToken(Guid roomId)
+    {
+        var user = await GetUser();
+
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Livekit:ApiSecret"]));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var video = new
+        {
+            roomJoin = true,
+            room = roomId,
+            canPublish = true,
+            canSubscribe = true
+        };
+
+        var claims = new Dictionary<string, object>
+        {
+            { "sub", user.Id.ToString() },
+            { "jti", Guid.NewGuid().ToString() },
+            { "video", video }
+        };
+
+        var header = new JwtHeader(credentials);
+        var now = DateTime.Now;
+        var payload = new JwtPayload(_config["Livekit:ApiKey"], "", Enumerable.Empty<Claim>(), claims, now, now.AddHours(2), now);
+
+        var token = new JwtSecurityToken(header, payload);
+
+        return new VideoRoomAccess
+        {
+            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            Url = "wss://livekit.taco-treehouse.de"
+        };
     }
 
     private async Task<OperationResult> AddRoomToUser(ApplicationUser user, Guid roomId)
