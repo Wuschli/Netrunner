@@ -196,7 +196,7 @@ public class RoomsController : NetrunnerController
         return new VideoRoomAccess
         {
             Token = new JwtSecurityTokenHandler().WriteToken(token),
-            Url = "wss://livekit.taco-treehouse.de"
+            Url = _config["Livekit:Url"]
         };
     }
 

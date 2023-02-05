@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using Netrunner.Server.Helpers;
 using Netrunner.Server.Services;
 using System.Reflection;
+using MQTTnet.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -17,6 +18,8 @@ IdentityModelEventSource.ShowPII = true;
 
 services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 services.AddSingleton<IUsersService, UsersService>();
+services.AddSingleton<IMqttAuthService, MqttAuthService>();
+services.AddSingleton<ITokenValidationService, TokenValidationService>();
 services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 services
@@ -64,8 +67,13 @@ services.AddSwaggerGen(c =>
         }
     });
 });
+services.AddHostedMqttServer(options => { options.WithDefaultEndpoint(); });
+services.AddMqttConnectionHandler();
+services.AddConnections();
 
 var app = builder.Build();
+
+app.UseRouting();
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
@@ -78,5 +86,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapMqtt("/mqtt");
+app.UseMqttServer(server => { app.Services.GetRequiredService<IMqttAuthService>().Configure(server); });
 
 app.Run();

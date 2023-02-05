@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using MQTTnet;
+using MQTTnet.Server;
 using Netrunner.Server.Helpers;
 using Netrunner.Server.Services;
 using Netrunner.Shared.Chat;
+using Newtonsoft.Json;
 
 namespace Netrunner.Server.Controllers;
 
@@ -12,10 +15,12 @@ namespace Netrunner.Server.Controllers;
 [Route("[controller]")]
 public class MessagesController : NetrunnerController
 {
+    private readonly MqttServer _mqttServer;
     private readonly IMongoCollection<ChatMessage> _messages;
 
-    public MessagesController(IUsersService users, IConfiguration config) : base(users)
+    public MessagesController(IUsersService users, IConfiguration config, MqttServer mqttServer) : base(users)
     {
+        _mqttServer = mqttServer;
         var mongoClient = new MongoClient(config["DB:ConnectionString"]);
         var database = mongoClient.GetDatabase(config["DB:DatabaseName"]);
         _messages = database.GetCollection<ChatMessage>(Constants.MessagesCollection);
@@ -60,6 +65,11 @@ public class MessagesController : NetrunnerController
         };
 
         await _messages.InsertOneAsync(dbMessage);
-        //TODO publish
+
+        var mqttMessage = new MqttApplicationMessageBuilder().WithTopic(roomId.ToString()).WithPayload(dbMessage.Id.ToString()).Build();
+        await _mqttServer.InjectApplicationMessage(new InjectedMqttApplicationMessage(mqttMessage)
+        {
+            SenderClientId = "Server"
+        });
     }
 }
